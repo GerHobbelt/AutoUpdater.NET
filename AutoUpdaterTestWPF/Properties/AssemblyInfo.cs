@@ -10,9 +10,9 @@ using System.Windows;
 [assembly: AssemblyTitle("AutoUpdaterTestWPF")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("RBSoft")]
+[assembly: AssemblyCompany("K1k0Soft")]
 [assembly: AssemblyProduct("AutoUpdaterTestWPF")]
-[assembly: AssemblyCopyright("Copyright © 2012-2018 RBSoft")]
+[assembly: AssemblyCopyright("")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -53,3 +53,4 @@ using System.Windows;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyInformationalVersion("1.0.0.0")]

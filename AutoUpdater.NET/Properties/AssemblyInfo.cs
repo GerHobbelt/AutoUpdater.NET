@@ -8,9 +8,9 @@ using System.Resources;
 [assembly: AssemblyTitle("AutoUpdater.NET")]
 [assembly: AssemblyDescription("AutoUpdater.NET is a class library that allows .NET developers to easily add auto update functionality to their classic desktop application projects.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("RBSoft")]
+[assembly: AssemblyCompany("K1k0Soft")]
 [assembly: AssemblyProduct("AutoUpdater.NET")]
-[assembly: AssemblyCopyright("Copyright © 2012-2018 RBSoft")]
+[assembly: AssemblyCopyright("")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Resources;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("a4037a6f-fdf7-46c8-a303-c3c4fcddb015")]
+[assembly: Guid("3ED6BADC-3374-47F3-A1D9-F2F2656FF090")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -32,6 +32,7 @@ using System.Resources;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.4.9.0")]
-[assembly: AssemblyFileVersion("1.4.9.0")]
+[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyInformationalVersion("1.0.0.0")]
 [assembly: NeutralResourcesLanguageAttribute("en")]

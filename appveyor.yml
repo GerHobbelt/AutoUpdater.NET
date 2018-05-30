@@ -3,7 +3,7 @@ environment:
   my_secret:
     secure: CaK0p5tfz9qoThJhJebPpPKqAQhIx2cHZ+PVX0PIJ7VK880AxwnunViAJcwBfjH1
     
-version: %my_version%.{build}
+#version: %my_version%.{build}
 branches:
   only:
   - master
@@ -15,7 +15,8 @@ clone_folder: c:\projects\AutoUpdater.NET
 
 build: off
 install:
-- nuget install secure-file -ExcludeVersion
+- appveyor UpdateBuild -Version 
+- nuget install secure-file -ExcludeVersion "$env:my_version.$env.APPVEYOR_BUILD_NUMBER"
 - cmd: nuget restore
 - secure-file\tools\secure-file -decrypt "c:\projects\AutoUpdater.NET\ZipExtractor\ZipExtractor.snk.enc" -secret %my_secret%
 - secure-file\tools\secure-file -decrypt "c:\projects\AutoUpdater.NET\AutoUpdater.NET\AutoUpdater.NET.snk.enc" -secret %my_secret%
