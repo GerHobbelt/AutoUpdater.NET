@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+    <metadata>
+        <id>Autoupdater.NET.SelfDriven</id>
+        <version>1.0.0</version>
+        <title>AutoUpdater.NET.SelfDriven</title>
+        <authors>K1k0Soft (forked from ravibpatel/AutoUpdater.NET)</authors>
+        <owners>K1k0Soft</owners>
+        <licenseUrl>https://github.com/asarmiento13315/AutoUpdater.NET/blob/master/LICENSE</licenseUrl>
+        <projectUrl>https://github.com/asarmiento13315/AutoUpdater.NET</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>AutoUpdater.NET.SelfDriven is a class library that allows .NET developers to easily add auto update functionality to their classic desktop application projects.</description>
+        <summary>Add auto update functionality to .NET applications, with capability to run in unattended mode.</summary>
+        <releaseNotes>https://github.com/asarmiento13315/AutoUpdater.NET/releases</releaseNotes>
+        <copyright>K1k0Soft</copyright>
+        <language>en-US</language>
+        <tags>autoupdate updater self-driven unattended c# vb wpf winforms</tags>
+    </metadata>
+</package>

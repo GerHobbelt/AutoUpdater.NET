@@ -1,12 +1,12 @@
-# AutoUpdater.NET  [![Build status](https://ci.appveyor.com/api/projects/status/yng987o7dauk9gqc?svg=true)](https://ci.appveyor.com/project/ravibpatel/autoupdater-net) [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](http://paypal.me/rbsoft)
+# AutoUpdater.NET  [![Build status](https://ci.appveyor.com/api/projects/status/yng987o7dauk9gqc?svg=true)](https://ci.appveyor.com/project/asarmiento13315/autoupdater-net) [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](http://paypal.me/K1k0Soft)
 
 AutoUpdater.NET is a class library that allows .NET developers to easily add auto update functionality to their classic desktop application projects.
 
-## The NuGet package  [![NuGet](https://img.shields.io/nuget/v/Autoupdater.NET.Official.svg)](https://www.nuget.org/packages/Autoupdater.NET.Official/) [![NuGet](https://img.shields.io/nuget/dt/Autoupdater.NET.Official.svg)](https://www.nuget.org/packages/Autoupdater.NET.Official/)
+## The NuGet package  [![NuGet](https://img.shields.io/nuget/v/Autoupdater.NET.SelfDriven.svg)](https://www.nuget.org/packages/Autoupdater.NET.SelfDriven/) [![NuGet](https://img.shields.io/nuget/dt/Autoupdater.NET.SelfDriven.svg)](https://www.nuget.org/packages/Autoupdater.NET.SelfDriven/)
 
-`https://www.nuget.org/packages/Autoupdater.NET.Official/`
+`https://www.nuget.org/packages/Autoupdater.NET.SelfDriven/`
 
-    PM> Install-Package Autoupdater.NET.Official
+    PM> Install-Package Autoupdater.NET.SelfDriven
 
 ## How it works
 
@@ -21,9 +21,8 @@ AutoUpdater.NET uses XML file located on a server to get the release information
 ````xml
 <?xml version="1.0" encoding="UTF-8"?>
 <item>
-    <version>2.0.0.0</version>
-    <url>http://rbsoft.org/downloads/AutoUpdaterTest.zip</url>
-    <changelog>https://github.com/ravibpatel/AutoUpdater.NET/releases</changelog>
+    <version>1.0.0.0</version>
+    <url>[url-of-the-package-to-be-downloaded]</url>
     <mandatory>false</mandatory>
 </item>
 ````
@@ -52,7 +51,7 @@ using AutoUpdaterDotNET;
 Now you just need to add following line to your main form constructor or in Form_Load event. You can add this line anywhere you like. If you don't like to check for update when application starts then you can create a Check for update button and add this line to Button_Click event.
 
 ````csharp
-AutoUpdater.Start("http://rbsoft.org/updates/AutoUpdaterTest.xml");
+AutoUpdater.Start("[url-of-your-latest-version-information-xml-file]");
 ````
 
 Start method of AutoUpdater class takes URL of the XML file you uploaded to server as a parameter.
@@ -287,8 +286,8 @@ private void AutoUpdaterOnParseUpdateInfoEvent(ParseUpdateInfoEventArgs args)
 ````json
 {
     "version":"2.0.0.0", 
-    "url":"http://rbsoft.org/downloads/AutoUpdaterTest.zip",
-    "changelog":"https://github.com/ravibpatel/AutoUpdater.NET/releases",
+    "url":"...",
+    "changelog":"...",
     "mandatory":true
 }
 ````
