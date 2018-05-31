@@ -1,4 +1,4 @@
-# AutoUpdater.NET  [![Build status](https://ci.appveyor.com/api/projects/status/yng987o7dauk9gqc?svg=true)](https://ci.appveyor.com/project/asarmiento13315/autoupdater-net) [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](http://paypal.me/K1k0Soft)
+# AutoUpdater.NET  [![Build status](https://ci.appveyor.com/api/projects/status/02fv57hxutu4mnq2?svg=true)](https://ci.appveyor.com/project/asarmiento13315/autoupdater-net) [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](http://paypal.me/K1k0Soft)
 
 AutoUpdater.NET is a class library that allows .NET developers to easily add auto update functionality to their classic desktop application projects.
 

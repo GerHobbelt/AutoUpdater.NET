@@ -1,5 +1,4 @@
 environment:
-  my_version: 1.0.0
   my_secret:
     secure: CaK0p5tfz9qoThJhJebPpPKqAQhIx2cHZ+PVX0PIJ7VK880AxwnunViAJcwBfjH1
     
@@ -15,8 +14,9 @@ clone_folder: c:\projects\AutoUpdater.NET
 
 build: off
 install:
-- appveyor UpdateBuild -Version 
-- nuget install secure-file -ExcludeVersion "$env:my_version.$env.APPVEYOR_BUILD_NUMBER"
+- cmd: set my_version = $(appveyor_repo_tag_name)
+- appveyor UpdateBuild -Version "$env:my_version.$env:appveyor_build_version"
+- nuget install secure-file -ExcludeVersion
 - cmd: nuget restore
 - secure-file\tools\secure-file -decrypt "c:\projects\AutoUpdater.NET\ZipExtractor\ZipExtractor.snk.enc" -secret %my_secret%
 - secure-file\tools\secure-file -decrypt "c:\projects\AutoUpdater.NET\AutoUpdater.NET\AutoUpdater.NET.snk.enc" -secret %my_secret%
@@ -39,7 +39,7 @@ artifacts:
 
 deploy:
 - provider: GitHub
-  release: $(APPVEYOR_REPO_TAG_NAME)
+  release: $(appveyor_repo_tag_name)
   description: '// TODO: Write Release Notes'
   artifact: AutoUpdater.NET-%my_version%.zip
   auth_token:
@@ -52,7 +52,7 @@ deploy:
 
 - provider: NuGet
   api_key:
-    secure: nnGNDu3MQoHzW447HY4DLsBRPl+/HCclWEMYeJejVwFQr7KHDFgTGebOXRdAtXss
+    secure: e7rKkhnUE1sgcI6NxGDdBOUi8+63vFjw1gNn4g0UZZYO4Uum78CzpkECN3qH6VI1
   skip_symbols: false
   artifact: Autoupdater.NET.SelfDriven.%my_version%.nupkg
   on:
