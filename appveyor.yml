@@ -3,7 +3,7 @@ environment:
   my_secret:
     secure: CaK0p5tfz9qoThJhJebPpPKqAQhIx2cHZ+PVX0PIJ7VK880AxwnunViAJcwBfjH1
     
-#version: %my_version%.{build}
+#version: 1.0.0.{build} # version is set by the install script
 branches:
   only:
   - master
