@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>Autoupdater.NET.SelfDriven</id>
-        <version>1.0.0</version>
+        <version>$version$</version>
         <title>AutoUpdater.NET.SelfDriven</title>
         <authors>K1k0Soft (forked from ravibpatel/AutoUpdater.NET)</authors>
         <owners>K1k0Soft</owners>
