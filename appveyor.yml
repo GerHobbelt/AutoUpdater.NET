@@ -1,75 +1,70 @@
-version: 1.0.0.{build}
-skip_non_tags: true
+version: '{build}'
 skip_branch_with_pr: true
 shallow_clone: true
 clone_folder: c:\projects\AutoUpdater.NET
+
 init:
 - ps: >-
     if ($env:appveyor_repo_tag -eq "true")
-
     {
       $env:tag_version = "$($env:appveyor_repo_tag_name.TrimStart("v"))"
-      $env:build_version = "rel-$env:tag_version.$env:appveyor_build_version"
-      $env:release_version = "$env:tag_version.$env:appveyor_build_version"
+      $env:build_version = "rel-$env:tag_version.ci$env:appveyor_build_number"
+      $env:release_version = "$env:tag_version.$env:appveyor_build_number"
     }
-
     else
-
     {
-      $env:tag_version = "$env:appveyor_repo_branch-$($env:appveyor_repo_commit.substring(0,7))"
-      $env:build_version = "dev-$env:tag_version.$env:appveyor_build_version"
-      $env:release_version = "0.0.0.$env:appveyor_build_version"
+      $env:tag_version = "$env:appveyor_repo_branch-$($env:appveyor_repo_commit.substring(0,8))"
+      $env:build_version = "dev-$env:tag_version.ci$env:appveyor_build_number"
+      $env:release_version = "99.0.0.$env:appveyor_build_number"
     }
-
     Update-AppveyorBuild -Version "$env:build_version"
+
 assembly_info:
   patch: true
   file: '**\AutoUpdater.NET\Properties\AssemblyInfo.*'
-  assembly_version: '$(release_version)'
-  assembly_file_version: '$(release_version)'
-  assembly_informational_version: '$(release_version)'
+  assembly_version: $(release_version)
+  assembly_file_version: $(release_version)
+  assembly_informational_version: $(release_version)
+
 environment:
   my_secret:
-    secure: CaK0p5tfz9qoThJhJebPpPKqAQhIx2cHZ+PVX0PIJ7VK880AxwnunViAJcwBfjH1
-install:
+    secure: KyQ4Y+q48GXGJ1/dlnIm62Xz0oUwTcviRMrl02OiNGtin2DvVYMA27FbWfR5Xkx4
+
+build_script:
 - cmd: >-
     nuget install secure-file -ExcludeVersion
 
     nuget restore
 
-    secure-file\tools\secure-file -decrypt "c:\projects\AutoUpdater.NET\ZipExtractor\ZipExtractor.snk.enc" -secret %my_secret%
-
-    secure-file\tools\secure-file -decrypt "c:\projects\AutoUpdater.NET\AutoUpdater.NET\AutoUpdater.NET.snk.enc" -secret %my_secret%
+    secure-file\tools\secure-file -decrypt c:\projects\AutoUpdater.NET\ZipExtractor\ZipExtractor.snk.enc -secret %my_secret%
+    secure-file\tools\secure-file -decrypt c:\projects\AutoUpdater.NET\AutoUpdater.NET\AutoUpdater.NET.snk.enc -secret %my_secret%
 
     msbuild "c:\projects\AutoUpdater.NET\ZipExtractor\ZipExtractor.csproj" /p:Configuration=Release /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
-
     msbuild "c:\projects\AutoUpdater.NET\AutoUpdater.NET\AutoUpdater.NET.csproj" /p:Configuration=Release /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
     msbuild "c:\projects\AutoUpdater.NET\ZipExtractor\ZipExtractor.csproj" /p:Configuration=Release-NET35 /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
-
     msbuild "c:\projects\AutoUpdater.NET\AutoUpdater.NET\AutoUpdater.NET.csproj" /p:Configuration=Release-NET35 /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
     msbuild "c:\projects\AutoUpdater.NET\ZipExtractor\ZipExtractor.csproj" /p:Configuration=Release-NET40 /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
-
     msbuild "c:\projects\AutoUpdater.NET\AutoUpdater.NET\AutoUpdater.NET.csproj" /p:Configuration=Release-NET40 /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
     msbuild "c:\projects\AutoUpdater.NET\ZipExtractor\ZipExtractor.csproj" /p:Configuration=Release-NET452 /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
-
     msbuild "c:\projects\AutoUpdater.NET\AutoUpdater.NET\AutoUpdater.NET.csproj" /p:Configuration=Release-NET452 /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
     msbuild "c:\projects\AutoUpdater.NET\ZipExtractor\ZipExtractor.csproj" /p:Configuration=Release-NET462 /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
-
     msbuild "c:\projects\AutoUpdater.NET\AutoUpdater.NET\AutoUpdater.NET.csproj" /p:Configuration=Release-NET462 /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
-    nuget pack "c:\projects\AutoUpdater.NET\AutoUpdater.NET\build\Autoupdater.NET.SelfDriven.nuspec"
+    nuget pack "c:\projects\AutoUpdater.NET\AutoUpdater.NET\build\Autoupdater.NET.SelfDriven.nuspec" -Version %release_version%
 
     7z a AutoUpdater.NET-%release_version%.zip %APPVEYOR_BUILD_FOLDER%\AutoUpdater.NET\build\lib\*
-build: off
+
 artifacts:
 - path: AutoUpdater.NET-%release_version%.zip
 - path: Autoupdater.NET.SelfDriven.%release_version%.nupkg
+
 before_deploy:
-- ps: if ($env:appveyor_repo_tag -eq "false") { $host.SetShouldExit($LastExitCode ) }
+- ps: if ($env:appveyor_repo_tag -eq "false") { Exit-AppveyorBuild }
+
 deploy:
 - provider: GitHub
   release: 'v$(release_version)'
