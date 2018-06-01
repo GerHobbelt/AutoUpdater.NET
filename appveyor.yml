@@ -33,6 +33,8 @@ environment:
 
 build_script:
 - cmd: >-
+    msbuild /help
+
     nuget install secure-file -ExcludeVersion
 
     nuget restore
