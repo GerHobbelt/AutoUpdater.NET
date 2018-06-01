@@ -352,7 +352,7 @@
     <Error Condition="!Exists('..\packages\Resource.Embedder.1.2.5\build\Resource.Embedder.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Resource.Embedder.1.2.5\build\Resource.Embedder.targets'))" />
   </Target>
   <PropertyGroup>
-    <PreBuildEvent>copy /v /y "$(SolutionDir)ZipExtractor\Output\ZipExtractor.exe*" "$(SolutionDir)AutoUpdater.NET\Resources\"</PreBuildEvent>
+    <PreBuildEvent>copy /v /y $(SolutionDir)ZipExtractor\Output\ZipExtractor.exe* $(SolutionDir)AutoUpdater.NET\Resources\</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
