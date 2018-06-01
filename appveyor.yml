@@ -16,14 +16,18 @@ init:
 
     $env:my_release_version = "99.9.9.$env:appveyor_build_number"
 
+    $env:is_prerelease = "false"
+
 
     if ($env:appveyor_repo_commit_message -match "\[v(?<ver>\d+.\d+.\d+)(?<meta>-?.*?)]")
 
     {
       $env:build_2_release = "true"
-      $env:my_build_version = "v$Matches.ver$Matches.meta"
-      $env:my_release_version = "$Matches.ver.$env:appveyor_build_number"
+      $env:my_build_version = "v$($Matches.ver)$($Matches.meta)"
+      $env:my_release_version = "$($Matches.ver).$env:appveyor_build_number"
       Update-AppveyorBuild -Version "$env:my_build_version-ci$env:appveyor_build_number"
+
+      if (-not ([string]::IsNullOrWhitespace($Matches.meta))) { $env:is_prerelease = "true" }
     }
 assembly_info:
   patch: true
@@ -83,13 +87,23 @@ before_deploy:
 
     if ($env:build_2_release -eq "false") { Exit-AppveyorBuild }
 deploy:
-- provider: GitHub
-  release: '$(my_build_version)'
-  auth_token:
-    secure: /GyKxy/BoEv0aU75gh8Y4G/QY7L3AnjvS6hezGUrQuqRC+i7yVS1G657HAWcv5xE
-  artifact: '%my_package_name%-%my_build_version%.zip'
 - provider: NuGet
   api_key:
     secure: e7rKkhnUE1sgcI6NxGDdBOUi8+63vFjw1gNn4g0UZZYO4Uum78CzpkECN3qH6VI1
   skip_symbols: true
   artifact: '%my_package_name%.%my_release_version%.nupkg'
+- provider: GitHub
+  release: '$(my_build_version)'
+  auth_token:
+    secure: /GyKxy/BoEv0aU75gh8Y4G/QY7L3AnjvS6hezGUrQuqRC+i7yVS1G657HAWcv5xE
+  artifact: '%my_package_name%-%my_build_version%.zip'
+  on:
+    is_prerelease: false
+- provider: GitHub
+  release: '$(my_build_version)'
+  auth_token:
+    secure: /GyKxy/BoEv0aU75gh8Y4G/QY7L3AnjvS6hezGUrQuqRC+i7yVS1G657HAWcv5xE
+  artifact: '%my_package_name%-%my_build_version%.zip'
+  prerelease: true
+  on:
+    is_prerelease: true
