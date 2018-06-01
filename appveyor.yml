@@ -1,32 +1,36 @@
-version: '{build}'
-skip_branch_with_pr: true
+version: Dev-ci{build}
+skip_tags: true
 shallow_clone: true
 clone_folder: c:\projects\AutoUpdater.NET
 init:
 - ps: >-
-    if ($env:appveyor_repo_tag -eq "true")
+    if ($env:appveyor_repo_tag -eq "true") { Exit-AppveyorBuild }
+
+
+    $env:my_package_name = "AutoUpdater.NET.SelfDriven"
+
+
+    $env:build_2_release = "false"
+
+    $env:my_build_version = "Dev-ci$env:appveyor_build_number"
+
+    $env:my_release_version = "99.9.9.$env:appveyor_build_number"
+
+
+    if ($env:appveyor_repo_commit_message -match "\[v(?<ver>\d+.\d+.\d+)(?<meta>-?.*?)]")
 
     {
-      $env:tag_version = "$($env:appveyor_repo_tag_name.TrimStart("v"))"
-      $env:build_version = "rel-$env:tag_version.ci$env:appveyor_build_number"
-      $env:release_version = "$env:tag_version.$env:appveyor_build_number"
+      $env:build_2_release = "true"
+      $env:my_build_version = "v$Matches.ver$Matches.meta"
+      $env:my_release_version = "$Matches.ver.$env:appveyor_build_number"
+      Update-AppveyorBuild -Version "$env:my_build_version-ci$env:appveyor_build_number"
     }
-
-    else
-
-    {
-      $env:tag_version = "$env:appveyor_repo_branch-$($env:appveyor_repo_commit.substring(0,8))"
-      $env:build_version = "dev-$env:tag_version.ci$env:appveyor_build_number"
-      $env:release_version = "99.0.0.$env:appveyor_build_number"
-    }
-
-    Update-AppveyorBuild -Version "$env:build_version"
 assembly_info:
   patch: true
   file: '**\AutoUpdater.NET\Properties\AssemblyInfo.*'
-  assembly_version: $(release_version)
-  assembly_file_version: $(release_version)
-  assembly_informational_version: $(release_version)
+  assembly_version: $(my_release_version)
+  assembly_file_version: $(my_release_version)
+  assembly_informational_version: $(my_build_version)
 environment:
   my_secret:
     secure: KyQ4Y+q48GXGJ1/dlnIm62Xz0oUwTcviRMrl02OiNGtin2DvVYMA27FbWfR5Xkx4
@@ -66,23 +70,26 @@ build_script:
     msbuild "c:\projects\AutoUpdater.NET\AutoUpdater.NET\AutoUpdater.NET.csproj" /p:Configuration=Release-NET462 /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
 
-    nuget pack "c:\projects\AutoUpdater.NET\AutoUpdater.NET\build\Autoupdater.NET.SelfDriven.nuspec" -Version %release_version%
+    nuget pack "c:\projects\AutoUpdater.NET\AutoUpdater.NET\build\Autoupdater.NET.SelfDriven.nuspec" -Version %my_build_version%
 
 
-    7z a AutoUpdater.NET-%release_version%.zip %APPVEYOR_BUILD_FOLDER%\AutoUpdater.NET\build\lib\*
+    7z a %my_package_name%-%my_build_version%.zip %APPVEYOR_BUILD_FOLDER%\AutoUpdater.NET\build\lib\*
 artifacts:
-- path: AutoUpdater.NET-%release_version%.zip
-- path: Autoupdater.NET.SelfDriven.%release_version%.nupkg
+- path: '%my_package_name%-%my_build_version%.zip'
+- path: '%my_package_name%.%my_build_version%.nupkg'
 before_deploy:
-- ps: if ($env:appveyor_repo_tag -eq "false") { Exit-AppveyorBuild }
+- ps: >-
+    if ($env:appveyor_repo_tag -eq "true") { Exit-AppveyorBuild }
+
+    if ($env:build_2_release -eq "true") { Exit-AppveyorBuild }
 deploy:
 - provider: GitHub
-  release: 'v$(release_version)'
+  release: '$(my_build_version)'
   auth_token:
     secure: /GyKxy/BoEv0aU75gh8Y4G/QY7L3AnjvS6hezGUrQuqRC+i7yVS1G657HAWcv5xE
-  artifact: AutoUpdater.NET-%release_version%.zip
+  artifact: '%my_package_name%-%my_release_version%.zip'
 - provider: NuGet
   api_key:
     secure: e7rKkhnUE1sgcI6NxGDdBOUi8+63vFjw1gNn4g0UZZYO4Uum78CzpkECN3qH6VI1
   skip_symbols: true
-  artifact: Autoupdater.NET.SelfDriven.%release_version%.nupkg
+  artifact: '%my_package_name%.%my_release_version%.nupkg'
