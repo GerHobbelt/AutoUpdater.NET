@@ -21,7 +21,7 @@ AutoUpdater.NET uses XML file located on a server to get the release information
 ````xml
 <?xml version="1.0" encoding="UTF-8"?>
 <item>
-    <version>1.0.0.0</version>
+    <version>2.0.0.0</version>
     <url>[url-of-the-package-to-be-downloaded]</url>
     <mandatory>false</mandatory>
 </item>
