@@ -1,6 +1,6 @@
-# AutoUpdater.NET  [![Build status](https://ci.appveyor.com/api/projects/status/02fv57hxutu4mnq2?svg=true)](https://ci.appveyor.com/project/asarmiento13315/autoupdater-net) [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](http://paypal.me/K1k0Soft)
+# AutoUpdater.NET (Self-Driven)  [![Build status](https://ci.appveyor.com/api/projects/status/02fv57hxutu4mnq2?svg=true)](https://ci.appveyor.com/project/asarmiento13315/autoupdater-net) [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](http://paypal.me/K1k0Soft)
 
-AutoUpdater.NET is a class library that allows .NET developers to easily add auto update functionality to their classic desktop application projects.
+AutoUpdater.NET is a class library that allows .NET developers to easily add auto update functionality to their classic desktop application projects, with capability to run in unattended mode.
 
 ## The NuGet package  [![NuGet](https://img.shields.io/nuget/v/Autoupdater.NET.SelfDriven.svg)](https://www.nuget.org/packages/Autoupdater.NET.SelfDriven/) [![NuGet](https://img.shields.io/nuget/dt/Autoupdater.NET.SelfDriven.svg)](https://www.nuget.org/packages/Autoupdater.NET.SelfDriven/)
 
@@ -156,7 +156,7 @@ System.Timers.Timer timer = new System.Timers.Timer
 };
 timer.Elapsed += delegate
 {
-    AutoUpdater.Start("http://rbsoft.org/updates/AutoUpdaterTest.xml");
+    AutoUpdater.Start("[url-of-your-latest-version-information-xml-file]");
 };
 timer.Start();
 ````
@@ -167,7 +167,7 @@ timer.Start();
 DispatcherTimer timer = new DispatcherTimer {Interval = TimeSpan.FromMinutes(2)};
 timer.Tick += delegate
 {
-    AutoUpdater.Start("http://rbsoft.org/updates/AutoUpdaterTestWPF.xml");
+    AutoUpdater.Start("[url-of-your-latest-version-information-xml-file]");
 };
 timer.Start();
 ````
