@@ -12,7 +12,7 @@ init:
 
     $env:build_2_release = "false"
 
-    $env:my_build_version = "Dev-ci$env:appveyor_build_number"
+    $env:my_build_version = "v99.9.9-ci$env:appveyor_build_number"
 
     $env:my_release_version = "99.9.9.$env:appveyor_build_number"
 
@@ -81,7 +81,7 @@ before_deploy:
 - ps: >-
     if ($env:appveyor_repo_tag -eq "true") { Exit-AppveyorBuild }
 
-    if ($env:build_2_release -eq "true") { Exit-AppveyorBuild }
+    if ($env:build_2_release -eq "false") { Exit-AppveyorBuild }
 deploy:
 - provider: GitHub
   release: '$(my_build_version)'
