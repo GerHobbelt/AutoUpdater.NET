@@ -14,6 +14,8 @@ init:
 
     $env:my_build_version = "v99.9.9-ci$env:appveyor_build_number"
 
+    $env:my_package_version = "99.9.9.$env:appveyor_build_number"
+
     $env:my_release_version = "99.9.9.$env:appveyor_build_number"
 
     $env:is_prerelease = "false"
@@ -24,6 +26,7 @@ init:
     {
       $env:build_2_release = "true"
       $env:my_build_version = "v$($Matches.ver)$($Matches.meta)"
+      $env:my_package_version = "$($Matches.ver)$($Matches.meta)"
       $env:my_release_version = "$($Matches.ver).$env:appveyor_build_number"
       Update-AppveyorBuild -Version "$env:my_build_version-ci$env:appveyor_build_number"
 
@@ -34,7 +37,7 @@ assembly_info:
   file: '**\AutoUpdater.NET\Properties\AssemblyInfo.*'
   assembly_version: $(my_release_version)
   assembly_file_version: $(my_release_version)
-  assembly_informational_version: $(my_release_version)
+  assembly_informational_version: $(my_package_version) #$(my_release_version)
 environment:
   my_secret:
     secure: KyQ4Y+q48GXGJ1/dlnIm62Xz0oUwTcviRMrl02OiNGtin2DvVYMA27FbWfR5Xkx4
@@ -75,13 +78,13 @@ build_script:
     msbuild "c:\projects\AutoUpdater.NET\AutoUpdater.NET\AutoUpdater.NET.csproj" /p:Configuration=Release-NET462 /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
 
-    nuget pack "c:\projects\AutoUpdater.NET\AutoUpdater.NET\build\Autoupdater.NET.SelfDriven.nuspec" -Version %my_release_version%
+    nuget pack "c:\projects\AutoUpdater.NET\AutoUpdater.NET\build\Autoupdater.NET.SelfDriven.nuspec" -Version %my_package_version%
 
 
     7z a %my_package_name%-%my_build_version%.zip %APPVEYOR_BUILD_FOLDER%\AutoUpdater.NET\build\lib\*
 artifacts:
 - path: '%my_package_name%-%my_build_version%.zip'
-- path: '%my_package_name%.%my_release_version%.nupkg'
+- path: '%my_package_name%.%my_package_version%.nupkg'
 before_deploy:
 - ps: >-
     if ($env:appveyor_repo_tag -eq "true") { Exit-AppveyorBuild }
@@ -92,7 +95,7 @@ deploy:
   api_key:
     secure: e7rKkhnUE1sgcI6NxGDdBOUi8+63vFjw1gNn4g0UZZYO4Uum78CzpkECN3qH6VI1
   skip_symbols: true
-  artifact: '%my_package_name%.%my_release_version%.nupkg'
+  artifact: '%my_package_name%.%my_package_version%.nupkg'
 - provider: GitHub
   release: '$(my_build_version)'
   auth_token:

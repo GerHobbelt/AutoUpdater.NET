@@ -64,7 +64,7 @@
     <None Include="UnitTests.snk" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Download Samples\XMLFile1.xml" />
+    <Content Include="DownloadSamples\lastest.xml" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
