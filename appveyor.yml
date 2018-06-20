@@ -48,6 +48,7 @@ build_script:
 
     secure-file\tools\secure-file -decrypt c:\projects\AutoUpdater.NET\AutoUpdater.NET\AutoUpdater.NET.snk.enc -secret %my_secret%
 
+    secure-file\tools\secure-file -decrypt c:\projects\AutoUpdater.NET\UnitTests\UnitTests.snk.enc -secret %my_secret%
 
     msbuild "c:\projects\AutoUpdater.NET\ZipExtractor\ZipExtractor.csproj" /p:Configuration=Release /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 

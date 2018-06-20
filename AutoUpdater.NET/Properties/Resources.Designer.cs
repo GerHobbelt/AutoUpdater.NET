@@ -19,7 +19,7 @@ namespace AutoUpdaterDotNET.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -107,6 +107,33 @@ namespace AutoUpdaterDotNET.Properties {
             get {
                 object obj = ResourceManager.GetObject("download_32", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Download completed..
+        /// </summary>
+        internal static string DownloadCompletedMessage {
+            get {
+                return ResourceManager.GetString("DownloadCompletedMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error downloading..
+        /// </summary>
+        internal static string DownloadErrorMessage {
+            get {
+                return ResourceManager.GetString("DownloadErrorMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Downloading the new version update ....
+        /// </summary>
+        internal static string DownloadingMessage {
+            get {
+                return ResourceManager.GetString("DownloadingMessage", resourceCulture);
             }
         }
         

@@ -116,22 +116,31 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AutoUpdater.cs" />
-    <Compile Include="DownloadUpdateDialog.cs">
+    <Compile Include="BasicImpls\BasicDownloadPresenterFactory.cs" />
+    <Compile Include="BasicImpls\BasicUpdateDownloader.cs" />
+    <Compile Include="BasicImpls\BasicUpdateDownloaderFactory.cs" />
+    <Compile Include="BasicImpls\BasicUpdateFormPresenterFactory.cs" />
+    <Compile Include="BasicImpls\DownloadUpdateDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="DownloadUpdateDialog.Designer.cs">
+    <Compile Include="BasicImpls\DownloadUpdateDialog.Designer.cs">
       <DependentUpon>DownloadUpdateDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="ILogger.cs" />
+    <Compile Include="InitSettings.cs" />
+    <Compile Include="UpdateDownloader.cs" />
     <Compile Include="RemindLaterForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="RemindLaterForm.Designer.cs">
       <DependentUpon>RemindLaterForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="UpdateForm.cs">
+    <Compile Include="States.cs" />
+    <Compile Include="UpdateDownloadPresenter.cs" />
+    <Compile Include="BasicImpls\UpdateForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UpdateForm.Designer.cs">
+    <Compile Include="BasicImpls\UpdateForm.Designer.cs">
       <DependentUpon>UpdateForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -140,57 +149,58 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="UpdateFormPresenter.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="DownloadUpdateDialog.da.resx">
+    <EmbeddedResource Include="BasicImpls\DownloadUpdateDialog.da.resx">
       <DependentUpon>DownloadUpdateDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DownloadUpdateDialog.de.resx">
+    <EmbeddedResource Include="BasicImpls\DownloadUpdateDialog.de.resx">
       <DependentUpon>DownloadUpdateDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DownloadUpdateDialog.es.resx">
+    <EmbeddedResource Include="BasicImpls\DownloadUpdateDialog.es.resx">
       <DependentUpon>DownloadUpdateDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DownloadUpdateDialog.fr.resx">
+    <EmbeddedResource Include="BasicImpls\DownloadUpdateDialog.fr.resx">
       <DependentUpon>DownloadUpdateDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DownloadUpdateDialog.it.resx">
+    <EmbeddedResource Include="BasicImpls\DownloadUpdateDialog.it.resx">
       <DependentUpon>DownloadUpdateDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DownloadUpdateDialog.ja-JP.resx">
+    <EmbeddedResource Include="BasicImpls\DownloadUpdateDialog.ja-JP.resx">
       <DependentUpon>DownloadUpdateDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DownloadUpdateDialog.ko.resx">
+    <EmbeddedResource Include="BasicImpls\DownloadUpdateDialog.ko.resx">
       <DependentUpon>DownloadUpdateDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DownloadUpdateDialog.nl.resx">
+    <EmbeddedResource Include="BasicImpls\DownloadUpdateDialog.nl.resx">
       <DependentUpon>DownloadUpdateDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DownloadUpdateDialog.pl.resx">
+    <EmbeddedResource Include="BasicImpls\DownloadUpdateDialog.pl.resx">
       <DependentUpon>DownloadUpdateDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DownloadUpdateDialog.pt.resx">
+    <EmbeddedResource Include="BasicImpls\DownloadUpdateDialog.pt.resx">
       <DependentUpon>DownloadUpdateDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DownloadUpdateDialog.resx">
+    <EmbeddedResource Include="BasicImpls\DownloadUpdateDialog.resx">
       <DependentUpon>DownloadUpdateDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DownloadUpdateDialog.ru.resx">
+    <EmbeddedResource Include="BasicImpls\DownloadUpdateDialog.ru.resx">
       <DependentUpon>DownloadUpdateDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DownloadUpdateDialog.sk.resx">
+    <EmbeddedResource Include="BasicImpls\DownloadUpdateDialog.sk.resx">
       <DependentUpon>DownloadUpdateDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DownloadUpdateDialog.sv.resx">
+    <EmbeddedResource Include="BasicImpls\DownloadUpdateDialog.sv.resx">
       <DependentUpon>DownloadUpdateDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DownloadUpdateDialog.tr.resx">
+    <EmbeddedResource Include="BasicImpls\DownloadUpdateDialog.tr.resx">
       <DependentUpon>DownloadUpdateDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DownloadUpdateDialog.zh.resx">
+    <EmbeddedResource Include="BasicImpls\DownloadUpdateDialog.zh.resx">
       <DependentUpon>DownloadUpdateDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DownloadUpdateDialog.zh-tw.resx">
+    <EmbeddedResource Include="BasicImpls\DownloadUpdateDialog.zh-tw.resx">
       <DependentUpon>DownloadUpdateDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.ja-JP.resx" />
@@ -258,37 +268,37 @@
     <EmbeddedResource Include="RemindLaterForm.zh-tw.resx">
       <DependentUpon>RemindLaterForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UpdateForm.da.resx">
+    <EmbeddedResource Include="BasicImpls\UpdateForm.da.resx">
       <DependentUpon>UpdateForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UpdateForm.de.resx">
+    <EmbeddedResource Include="BasicImpls\UpdateForm.de.resx">
       <DependentUpon>UpdateForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UpdateForm.es.resx">
+    <EmbeddedResource Include="BasicImpls\UpdateForm.es.resx">
       <DependentUpon>UpdateForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UpdateForm.fr.resx">
+    <EmbeddedResource Include="BasicImpls\UpdateForm.fr.resx">
       <DependentUpon>UpdateForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UpdateForm.it.resx">
+    <EmbeddedResource Include="BasicImpls\UpdateForm.it.resx">
       <DependentUpon>UpdateForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UpdateForm.ja-JP.resx">
+    <EmbeddedResource Include="BasicImpls\UpdateForm.ja-JP.resx">
       <DependentUpon>UpdateForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UpdateForm.ko.resx">
+    <EmbeddedResource Include="BasicImpls\UpdateForm.ko.resx">
       <DependentUpon>UpdateForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UpdateForm.nl.resx">
+    <EmbeddedResource Include="BasicImpls\UpdateForm.nl.resx">
       <DependentUpon>UpdateForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UpdateForm.pl.resx">
+    <EmbeddedResource Include="BasicImpls\UpdateForm.pl.resx">
       <DependentUpon>UpdateForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UpdateForm.pt.resx">
+    <EmbeddedResource Include="BasicImpls\UpdateForm.pt.resx">
       <DependentUpon>UpdateForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UpdateForm.resx">
+    <EmbeddedResource Include="BasicImpls\UpdateForm.resx">
       <DependentUpon>UpdateForm.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
@@ -297,22 +307,22 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="UpdateForm.ru.resx">
+    <EmbeddedResource Include="BasicImpls\UpdateForm.ru.resx">
       <DependentUpon>UpdateForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UpdateForm.sk.resx">
+    <EmbeddedResource Include="BasicImpls\UpdateForm.sk.resx">
       <DependentUpon>UpdateForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UpdateForm.sv.resx">
+    <EmbeddedResource Include="BasicImpls\UpdateForm.sv.resx">
       <DependentUpon>UpdateForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UpdateForm.tr.resx">
+    <EmbeddedResource Include="BasicImpls\UpdateForm.tr.resx">
       <DependentUpon>UpdateForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UpdateForm.zh.resx">
+    <EmbeddedResource Include="BasicImpls\UpdateForm.zh.resx">
       <DependentUpon>UpdateForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UpdateForm.zh-tw.resx">
+    <EmbeddedResource Include="BasicImpls\UpdateForm.zh-tw.resx">
       <DependentUpon>UpdateForm.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>

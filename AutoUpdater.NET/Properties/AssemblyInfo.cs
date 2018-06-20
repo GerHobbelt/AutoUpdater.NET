@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Resources;
+using System.Runtime.CompilerServices;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
@@ -36,3 +37,10 @@ using System.Resources;
 [assembly: AssemblyFileVersion("1.0.0.0")]
 [assembly: AssemblyInformationalVersion("1.0.0.0")]
 [assembly: NeutralResourcesLanguageAttribute("en")]
+
+[assembly: InternalsVisibleTo("UnitTests, PublicKey=" +
+                              "0024000004800000940000000602000000240000525341310004000001000100c994106355c986" +
+                              "8afa09d9ebe6466611289596a3b597e08d158f741e00d2355dd2b8e205d18e47e345510dd7d11f" +
+                              "9b6bbbe013ebad4f4d299cb5486448a0619ad4b2e6365b8e2c33b276e3ef76e492f113573d91ce" +
+                              "210051918a4e4e5ec783a0fafb5d5a1737227f29140a13a2280ee31c0800bb6e35e0ecdb425c5f" +
+                              "012598b7")]

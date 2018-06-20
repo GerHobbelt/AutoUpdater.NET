@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<item>
+  <version>2.0.0.0</version>
+  <url>http://prepaid-app.s3.amazonaws.com/ppmwindows/PrepaidMini.zip</url>
+  <args>setup.exe</args>
+  <mandatory>true</mandatory>
+</item>

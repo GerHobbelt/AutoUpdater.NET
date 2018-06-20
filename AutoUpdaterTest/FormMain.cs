@@ -23,61 +23,54 @@ namespace AutoUpdaterTest
 
         private void FormMain_Load(object sender, EventArgs e)
         {
-            //Uncomment below lines to handle parsing logic of non XML AppCast file.
+            //Use this to configure the AutoUpdater initialization
+            AutoUpdater.InitSettings
 
-            //AutoUpdater.ParseUpdateInfoEvent += AutoUpdaterOnParseUpdateInfoEvent;
-            //AutoUpdater.Start("https://rbsoft.org/updates/AutoUpdaterTest.json");
+                //Set the url of the file that contains information about latest version of the application. 
+                .SetAppCastURL("https://rbsoft.org/updates/AutoUpdaterTest.xml")
 
-            //Uncomment below line to run update process using non administrator account.
+                //Want to show custom application title then uncomment below line.
+                //.SetAppTitle("My Custom Application Title")
 
-            //AutoUpdater.RunUpdateAsAdmin = false;
+                //Uncomment below lines to handle parsing logic of non XML AppCast file.
+                //.SetAParseUpdateInfoEventHandler(AutoUpdaterOnParseUpdateInfoEvent)
 
-            //Uncomment below line to see russian version
+                //Uncomment below line to run update process using non administrator account.
+                //.DisableRunUpdateAsAdmin()
 
-            //Thread.CurrentThread.CurrentCulture = Thread.CurrentThread.CurrentUICulture = CultureInfo.CreateSpecificCulture("ru");
+                //If you want to open download page when user click on download button uncomment below line.
+                //.EnableOpenDownloadPage()
 
-            //If you want to open download page when user click on download button uncomment below line.
+                //Don't want user to select remind later time in AutoUpdater notification window then 
+                //uncomment 3 lines below so default remind later time will be set to 1 day.
+                //.DisableLetUserSelectRemindLater()
 
-            //AutoUpdater.OpenDownloadPage = true;
+                //Don't want to show Skip button then uncomment below line.
+                //.DisableShowSkipOption()
 
-            //Don't want user to select remind later time in AutoUpdater notification window then uncomment 3 lines below so default remind later time will be set to 2 days.
+                //Don't want to show Remind Later button then uncomment below line.
+                //.DisableShowRemindLaterOption()
 
-            //AutoUpdater.LetUserSelectRemindLater = false;
-            //AutoUpdater.RemindLaterTimeSpan = RemindLaterFormat.Minutes;
-            //AutoUpdater.RemindLaterAt = 1;
+                //Want to show errors then uncomment below line.
+                //.EnableReportErrors()
 
-            //Don't want to show Skip button then uncomment below line.
+                //Want to handle how your application will exit when application finished downloading then uncomment below line.
+                //.SetAnApplicationExitEventHandler(AutoUpdater_ApplicationExitEvent)
 
-            //AutoUpdater.ShowSkipButton = false;
+                //Want to handle update logic yourself then uncomment below line.
+                //.SetACheckForUpdateEventHandler(AutoUpdaterOnCheckForUpdateEvent)
 
-            //Don't want to show Remind Later button then uncomment below line.
+                //Want to use XML and Update file served only through Proxy.
+                //.SetProxy(new WebProxy("localproxyIP:8080", true)
+                //{
+                //    Credentials = new NetworkCredential("domain\\user", "password")
+                //})
 
-            //AutoUpdater.ShowRemindLaterButton = false;
+                // Finally call Initialize to use these settings
+                .Initialize();
 
-            //Want to show custom application title then uncomment below line.
-
-            //AutoUpdater.AppTitle = "My Custom Application Title";
-
-            //Want to show errors then uncomment below line.
-
-            //AutoUpdater.ReportErrors = true;
-
-            //Want to handle how your application will exit when application finished downloading then uncomment below line.
-
-            AutoUpdater.ApplicationExitEvent += AutoUpdater_ApplicationExitEvent;
-
-            //Want to handle update logic yourself then uncomment below line.
-
-            //AutoUpdater.CheckForUpdateEvent += AutoUpdaterOnCheckForUpdateEvent;
-
-            //Want to use XML and Update file served only through Proxy.
-
-            //var proxy = new WebProxy("localproxyIP:8080", true) {Credentials = new NetworkCredential("domain\\user", "password")};
-
-            //AutoUpdater.Proxy = proxy;
 
             //Want to check for updates frequently then uncomment following lines.
-
             //System.Timers.Timer timer = new System.Timers.Timer
             //{
             //    Interval = 2 * 60 * 1000,
@@ -85,11 +78,14 @@ namespace AutoUpdaterTest
             //};
             //timer.Elapsed += delegate
             //{
-            //    AutoUpdater.Start("https://rbsoft.org/updates/AutoUpdaterTest.xml");
+            //    AutoUpdater.Start();
             //};
             //timer.Start();
 
-            AutoUpdater.Start("https://rbsoft.org/updates/AutoUpdaterTest.xml");
+            //Uncomment below line to see russian version
+            //Thread.CurrentThread.CurrentCulture = Thread.CurrentThread.CurrentUICulture = CultureInfo.CreateSpecificCulture("ru");
+
+            AutoUpdater.Start();
         }
 
         private void AutoUpdater_ApplicationExitEvent()
@@ -98,7 +94,6 @@ namespace AutoUpdaterTest
             Thread.Sleep(5000);
             Application.Exit();
         }
-
 
         private void AutoUpdaterOnParseUpdateInfoEvent(ParseUpdateInfoEventArgs args)
         {
@@ -144,11 +139,7 @@ namespace AutoUpdaterTest
                         try
                         {
                             //You can use Download Update dialog used by AutoUpdater.NET to download the update.
-
-                            if (AutoUpdater.DownloadUpdate())
-                            {
-                                Application.Exit();
-                            }
+                            AutoUpdater.Current.DownloadAndRunTheUpdate();
                         }
                         catch (Exception exception)
                         {
@@ -173,6 +164,10 @@ namespace AutoUpdaterTest
 
         private void ButtonCheckForUpdate_Click(object sender, EventArgs e)
         {
+            AutoUpdater.InitSettings
+                .SetAppCastURL("https://rbsoft.org/updates/AutoUpdaterTest.xml")
+                .EnableMandatory()
+                .Initialize();
 
             //Uncomment below lines to select download path where update is saved.
 
@@ -181,11 +176,10 @@ namespace AutoUpdaterTest
             //{
             //    AutoUpdater.DownloadPath = folderBrowserDialog.SelectedPath;
             //    AutoUpdater.Mandatory = true;
-            //    AutoUpdater.Start("https://rbsoft.org/updates/AutoUpdaterTest.xml");
-            //}
 
-            AutoUpdater.Mandatory = true;
-            AutoUpdater.Start("https://rbsoft.org/updates/AutoUpdaterTest.xml");
+                  AutoUpdater.Start();
+
+            //}
         }
     }
 }

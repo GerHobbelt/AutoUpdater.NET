@@ -144,4 +144,13 @@
   <data name="DownloadSpeedMessage" xml:space="preserve">
     <value>Download in {0}/s</value>
   </data>
+  <data name="DownloadingMessage" xml:space="preserve">
+    <value>Downloading the new version update ...</value>
+  </data>
+  <data name="DownloadCompletedMessage" xml:space="preserve">
+    <value>Download completed.</value>
+  </data>
+  <data name="DownloadErrorMessage" xml:space="preserve">
+    <value>Error downloading.</value>
+  </data>
 </root>

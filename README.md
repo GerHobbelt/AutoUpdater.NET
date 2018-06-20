@@ -60,20 +60,20 @@ Start method of AutoUpdater class takes URL of the XML file you uploaded to serv
 
 ## Configuration Options
 
-### Disable Skip Button
+### Disable Skip Option
 
 If you don't want to show Skip button on Update form then just add following line with above code.
 
 ````csharp
-AutoUpdater.ShowSkipButton = false;
+AutoUpdater.ShowSkipOption = false;
 ````
 
-### Disable Remind Later Button
+### Disable Remind Later Option
 
 If you don't want to show Remind Later button on Update form then just add following line with above code.
 
 ````csharp
-AutoUpdater.ShowRemindLaterButton = false;
+AutoUpdater.ShowRemindLaterOption = false;
 ````
 
 ### Ignore previous Remind Later or Skip settings
