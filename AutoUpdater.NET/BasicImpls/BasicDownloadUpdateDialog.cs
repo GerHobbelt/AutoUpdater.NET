@@ -5,13 +5,13 @@ using AutoUpdaterDotNET.Properties;
 
 namespace AutoUpdaterDotNET.BasicImpls
 {
-    internal partial class DownloadUpdateDialog : Form, UpdateDownloadPresenter
+    internal partial class BasicDownloadUpdateDialog : Form, DownloadPresenter
     {
         private DateTime _startedAt;
 
         public AllowCancellationDelegate AllowCancellationDelegate { get; set; }
 
-        public DownloadUpdateDialog()
+        public BasicDownloadUpdateDialog()
         {
             InitializeComponent();
         }
@@ -23,7 +23,7 @@ namespace AutoUpdaterDotNET.BasicImpls
                 e.Cancel = !allowCancellation();
         }
 
-        void UpdateDownloadPresenter.ShowModal()
+        void DownloadPresenter.ShowModal()
         {
             ShowDialog();
         }

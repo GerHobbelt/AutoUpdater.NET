@@ -2,7 +2,7 @@
 {
     internal class BasicUpdateFormPresenterFactory : UpdateFormPresenterFactory
     {
-        public UpdateFormPresenter Create() => new UpdateForm();
+        public UpdateFormPresenter Create() => new BasicUpdateForm();
     }
 
 

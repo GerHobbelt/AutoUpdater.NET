@@ -1,6 +1,6 @@
 ﻿namespace AutoUpdaterDotNET.BasicImpls
 {
-    partial class UpdateForm
+    partial class BasicUpdateForm
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UpdateForm));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(BasicUpdateForm));
             this.webBrowser = new System.Windows.Forms.WebBrowser();
             this.labelUpdate = new System.Windows.Forms.Label();
             this.labelDescription = new System.Windows.Forms.Label();
@@ -92,7 +92,7 @@
             this.buttonSkip.UseVisualStyleBackColor = true;
             this.buttonSkip.Click += new System.EventHandler(this.ButtonSkipClick);
             // 
-            // UpdateForm
+            // BasicUpdateForm
             // 
             this.AcceptButton = this.buttonUpdate;
             resources.ApplyResources(this, "$this");
@@ -108,7 +108,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "UpdateForm";
+            this.Name = "BasicUpdateForm";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.UpdateForm_FormClosed);
             this.Load += new System.EventHandler(this.UpdateFormLoad);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxIcon)).EndInit();

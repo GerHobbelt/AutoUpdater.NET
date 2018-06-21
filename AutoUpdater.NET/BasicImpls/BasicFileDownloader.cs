@@ -8,18 +8,18 @@ using System.Threading;
 namespace AutoUpdaterDotNET.BasicImpls
 {
 #pragma warning disable 1591
-    public class BasicUpdateDownloader: UpdateDownloader
+    public class BasicFileDownloader: FileDownloader
     {
-        private readonly UpdateDownloadPresenter _presenter;
+        private readonly DownloadPresenter _presenter;
         private bool _allowCancellation;
-        private IWebProxy _proxy;
+        private readonly IWebProxy _proxy;
 
         private string _downloadPath;
         private DownloadFinishHandler _finishHandler;
         private string _tempFile;
         private readonly ManualResetEvent _waitModal = new ManualResetEvent(false);
 
-        public BasicUpdateDownloader(UpdateDownloadPresenter presenter, bool allowCancellation, IWebProxy proxy)
+        public BasicFileDownloader(DownloadPresenter presenter, bool allowCancellation, IWebProxy proxy)
         {
             _presenter = presenter;
             _allowCancellation = allowCancellation;
@@ -44,11 +44,9 @@ namespace AutoUpdaterDotNET.BasicImpls
             var webClient = SetupWebClient();
             webClient.DownloadFileAsync(uri, _tempFile);
 
-            try
-            {
+            try {
                 _presenter?.ShowModal();
-            }
-            catch {/*ignored*/}
+            } catch {/*ignored*/}
 
             if (webClient.IsBusy) // presenter wasn't a good Modal :/
                 ModallyWaitForDownloadCompleted();
@@ -63,11 +61,9 @@ namespace AutoUpdaterDotNET.BasicImpls
 
             webClient.DownloadProgressChanged += (s, a) =>
             {
-                try
-                {
+                try {
                     _presenter?.DownloadProgressChanged(a.BytesReceived, a.TotalBytesToReceive);
-                }
-                catch {/*ignored*/}
+                } catch {/*ignored*/}
             };
             webClient.DownloadFileCompleted += WebClientOnDownloadFileCompleted;
 
@@ -75,12 +71,10 @@ namespace AutoUpdaterDotNET.BasicImpls
                 _presenter.AllowCancellationDelegate = () =>
                 {
                     if (!_allowCancellation) return false;
-                    try
-                    {
+                    try {
                         if (webClient.IsBusy)
                             webClient.CancelAsync();
-                    }
-                    catch {/*ignored*/}
+                    } catch {/*ignored*/}
                     return true;
                 };
             return webClient;

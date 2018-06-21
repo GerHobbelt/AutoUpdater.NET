@@ -8,7 +8,7 @@ using Microsoft.Win32;
 
 namespace AutoUpdaterDotNET.BasicImpls
 {
-    internal partial class UpdateForm : Form, UpdateFormPresenter
+    internal partial class BasicUpdateForm : Form, UpdateFormPresenter
     {
         private UpdateFormResult _result;
         private bool _hideReleaseNotes;
@@ -18,7 +18,7 @@ namespace AutoUpdaterDotNET.BasicImpls
         public int RemindLaterAt { get; set; }
         public CancellationDelegate CancellationDelegate { get; set; }
 
-        public UpdateForm()
+        public BasicUpdateForm()
         {
             InitializeComponent();
         }
@@ -26,7 +26,7 @@ namespace AutoUpdaterDotNET.BasicImpls
         public UpdateFormResult ShowModal(string appTitle, Version currentVersion, Version installedVersion, 
             bool showSkipOption, bool showRemindLaterOption, string changeLogUrl)
         {
-            var resources = new System.ComponentModel.ComponentResourceManager(typeof(UpdateForm));
+            var resources = new System.ComponentModel.ComponentResourceManager(typeof(BasicUpdateForm));
             Text = string.Format(resources.GetString("$this.Text", CultureInfo.CurrentCulture), appTitle, currentVersion);
             labelUpdate.Text = string.Format(resources.GetString("labelUpdate.Text", CultureInfo.CurrentCulture), appTitle);
             labelDescription.Text = string.Format(resources.GetString("labelDescription.Text", CultureInfo.CurrentCulture), appTitle, currentVersion, installedVersion);

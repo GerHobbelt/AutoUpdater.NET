@@ -1,4 +1,7 @@
-﻿using System.Net;
+﻿using System;
+using System.Collections;
+using System.Net;
+using System.Reflection;
 
 namespace AutoUpdaterDotNET
 {
@@ -7,31 +10,53 @@ namespace AutoUpdaterDotNET
     /// </summary>
     public class InitSettings
     {
-        internal string AppTitle { get; set; }
-        internal string AppCastURL { get; set; }
-        internal IWebProxy Proxy { get; set; }
-        internal string DownloadPath { get; set; }
-        internal bool OpenDownloadPage { get; set; }
-        internal InstalledVersionProviderDelegate InstalledVersionProvider { get; set; }
-        internal bool ShowSkipOption { get; set; } = true;
-        internal bool ShowRemindLaterOption { get; set; } = true;
-        internal bool LetUserSelectRemindLater { get; set; } = true;
-        internal int RemindLaterAt { get; set; } = 1;
-        internal RemindLaterFormat RemindLaterTimeSpan { get; set; } = RemindLaterFormat.Days;
-        internal bool RunUpdateAsAdmin { get; set; } = true;
-        internal bool Mandatory { get; set; }
-        internal bool UnattendedMode { get; set; }
-        internal ApplicationExitEventHandler ApplicationExitEvent { get; set; }
-        internal CheckForUpdateEventHandler CheckForUpdateEvent { get; set; }
-        internal ParseUpdateInfoHandler ParseUpdateInfoEvent { get; set; }
+#pragma warning disable 1591
+        public Assembly MainAssembly { get; internal set; }
+        public string AppTitle { get; internal set; }
+        public string AppCastURL { get; internal set; }
+        public IWebProxy Proxy { get; internal set; }
+        public string DownloadPath { get; internal set; }
+        public bool OpenDownloadPage { get; internal set; }
+        public InstalledVersionProviderDelegate InstalledVersionProvider { get; internal set; }
+        public bool ShowSkipOption { get; internal set; } = true;
+        public bool ShowRemindLaterOption { get; internal set; } = true;
+        public bool LetUserSelectRemindLater { get; internal set; } = true;
+        public int RemindLaterAt { get; internal set; } = 1;
+        public RemindLaterFormat RemindLaterTimeSpan { get; internal set; } = RemindLaterFormat.Days;
+        public bool RunUpdateAsAdmin { get; internal set; } = true;
+        public bool Mandatory { get; internal set; }
+        public bool UnattendedMode { get; internal set; }
+        public bool ReportInfos
+        {
+            get { return ReportLevels.Get((int)ReportLevel.Info); }
+            set { ReportLevels.Set((int)ReportLevel.Info, value); }
+        }
+        public bool ReportErrors
+        {
+            get { return ReportLevels.Get((int)ReportLevel.Error); }
+            set { ReportLevels.Set((int)ReportLevel.Error, value); }
+        }
+        public UpdateFormPresenterFactory UpdateFormPresenterFactory { get; internal set; }
+        public DownloadPresenterFactory DownloadPresenterFactory { get; internal set; }
+        public FileDownloaderFactory FileDownloaderFactory { get; internal set; }
+        public UpdateLauncherFactory UpdateLauncherFactory { get; internal set; }
+        public ApplicationExitEventHandler ApplicationExitEvent { get; internal set; }
+        public CheckForUpdateEventHandler CheckForUpdateEvent { get; internal set; }
+        public ParseUpdateInfoHandler ParseUpdateInfoEvent { get; internal set; }
+#pragma warning restore 1591
+
+        internal readonly BitArray ReportLevels = new BitArray(2);
 
         // just for copy on Init()
-        private ILogger SetLogger;
-        private bool SetReportInfos;
-        private bool SetReportErrors;
-        private UpdateFormPresenterFactory SetUpdateFormPresenterFactory;
-        private DownloadPresenterFactory SetDownloadPresenterFactory;
-        private UpdateDownloaderFactory SetUpdateDownloaderFactory;
+        internal ILogger SetLogger;
+
+        /// <summary>
+        ///     AutoUpdater.NET will use this for version checking, instead of default that is the entry assembly.
+        /// </summary>
+        public InitSettings SetTheMainAssembly(Assembly assembly)
+        {
+            MainAssembly = assembly; return this;
+        }
 
         /// <summary>
         ///     Set the Application Title shown in Update dialog. Although AutoUpdater.NET will get it automatically, you can set this property if you like to give custom Title.
@@ -148,6 +173,78 @@ namespace AutoUpdaterDotNET
         }
 
         /// <summary>
+        ///     AutoUpdater.NET will use this, if provided. Usefull when running in unattended mode.
+        /// </summary>
+        public InitSettings SetALogger(ILogger logger)
+        {
+            SetLogger = logger; return this;
+        }
+
+        ///<summary>
+        ///     AutoUpdater.NET will report infos. If no Logger provided, it will log infos in the app data directory.
+        /// </summary>
+        public InitSettings EnableReportInfos()
+        {
+            ReportInfos = true;
+            return this;
+        }
+
+        ///<summary>
+        ///     AutoUpdater.NET will report errors. If no Logger provided, it will log infos in the app data directory.
+        /// </summary>
+        public InitSettings EnableReportErrors()
+        {
+            ReportErrors = true;
+            return this;
+        }
+
+        ///<summary>
+        ///     AutoUpdater.NET will report infos and errors. If no Logger provided, it will log infos in the app data directory.
+        /// </summary>
+        public InitSettings EnableReportAll()
+        {
+            ReportInfos = true;
+            ReportErrors = true;
+            return this;
+        }
+
+        ///<summary>
+        ///     AutoUpdater.NET will use this factory to instantiate an Update Form View to let the user take decisions.
+        /// </summary>
+        public InitSettings SetAnUpdateFormPresenterFactory(UpdateFormPresenterFactory factory)
+        {
+            UpdateFormPresenterFactory = factory;
+            return this;
+        }
+
+        ///<summary>
+        ///     AutoUpdater.NET will use this factory to instantiate an Update Download View for displaying progress.
+        /// </summary>
+        public InitSettings SetADownloadPresenterFactory(DownloadPresenterFactory factory)
+        {
+            DownloadPresenterFactory = factory;
+            return this;
+        }
+
+        ///<summary>
+        ///     AutoUpdater.NET will use this factory to instantiate the Update Downloader.
+        /// </summary>
+        public InitSettings SetAnUpdateDownloaderFactory(FileDownloaderFactory factory)
+        {
+            FileDownloaderFactory = factory;
+            return this;
+        }
+
+        ///<summary>
+        ///     AutoUpdater.NET will use this factory to instantiate the Update Launcher.
+        /// </summary>
+        public InitSettings SetAnUpdateLauncherFactory(UpdateLauncherFactory factory)
+        {
+            UpdateLauncherFactory = factory;
+            return this;
+        }
+
+        /// <summary>
         ///     An event that developers can use to exit the application gracefully.
         /// </summary>
         public InitSettings SetAnApplicationExitEventHandler(ApplicationExitEventHandler handler)
@@ -174,78 +271,43 @@ namespace AutoUpdaterDotNET
             return this;
         }
 
-        /// <summary>
-        ///     AutoUpdater.NET will use this, if provided. Usefull when running in unattended mode.
-        /// </summary>
-        public InitSettings SetALogger(ILogger logger)
-        {
-            SetLogger = logger; return this;
-        }
-
-        ///<summary>
-        ///     AutoUpdater.NET will report infos. If no Logger provided, it will log infos in the app data directory.
-        /// </summary>
-        public InitSettings EnableReportInfos()
-        {
-            SetReportInfos = true;
-            return this;
-        }
-
-        ///<summary>
-        ///     AutoUpdater.NET will report errors. If no Logger provided, it will log infos in the app data directory.
-        /// </summary>
-        public InitSettings EnableReportErrors()
-        {
-            SetReportErrors = true;
-            return this;
-        }
-
-        ///<summary>
-        ///     AutoUpdater.NET will use this factory to instantiate an Update Form View to let the user take decisions.
-        /// </summary>
-        public InitSettings SetAnUpdateFormPresenterFactory(UpdateFormPresenterFactory factory)
-        {
-            SetUpdateFormPresenterFactory = factory;
-            return this;
-        }
-
-        ///<summary>
-        ///     AutoUpdater.NET will use this factory to instantiate an Update Download View for displaying progress.
-        /// </summary>
-        public InitSettings SetADownloadPresenterFactory(DownloadPresenterFactory factory)
-        {
-            SetDownloadPresenterFactory = factory;
-            return this;
-        }
-
-        ///<summary>
-        ///     AutoUpdater.NET will use this factory to instantiate the Update Downloader.
-        /// </summary>
-        public InitSettings SetAnUpdateDownloaderFactory(UpdateDownloaderFactory factory)
-        {
-            SetUpdateDownloaderFactory = factory;
-            return this;
-        }
 
         ///<summary>
         ///     Returns a new instance of AutoUpdater.NET with these settings applied.
         /// </summary>
         public AutoUpdater Initialize()
         {
-            var u = new AutoUpdater
-            {
-                Settings = this,
-                Logger = SetLogger,
-                ReportInfos = SetReportInfos,
-                ReportErrors = SetReportErrors,
-                UpdateFormPresenterFactory = SetUpdateFormPresenterFactory,
-                DownloadPresenterFactory = SetDownloadPresenterFactory,
-                UpdateDownloaderFactory = SetUpdateDownloaderFactory
-            };
-            AutoUpdater.Current = u;
-            return u;
+            return AutoUpdater.Current = new AutoUpdater(this);
         }
     }
 
 
+#pragma warning disable 1591
+    public delegate Version InstalledVersionProviderDelegate();
+    public delegate void ApplicationExitEventHandler();
+    public delegate void CheckForUpdateEventHandler(UpdateInfoEventArgs args);
+    public delegate void ParseUpdateInfoHandler(ParseUpdateInfoEventArgs args);
+    public delegate void DoneDelegate();
+#pragma warning restore 1591
+
+    /// <summary>
+    ///     Enum representing the remind later time span.
+    /// </summary>
+    public enum RemindLaterFormat
+    {
+        /// <summary>
+        ///     Represents the time span in minutes.
+        /// </summary>
+        Minutes,
+
+        /// <summary>
+        ///     Represents the time span in hours.
+        /// </summary>
+        Hours,
+
+        /// <summary>
+        ///     Represents the time span in days.
+        /// </summary>
+        Days
+    }
 }

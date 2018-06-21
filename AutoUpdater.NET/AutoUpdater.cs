@@ -26,56 +26,35 @@ namespace AutoUpdaterDotNET
         private static readonly object _initLocker = new object();
         private static volatile AutoUpdater _current = null;
 
-        private readonly BitArray _reportLevels = new BitArray(2);
-        private readonly InnerLogger _innerLogger;
-        private UpdateFormPresenterFactory _updateFormPresenterFactory = new BasicUpdateFormPresenterFactory();
-        private DownloadPresenterFactory _downloadPresenterFactory = new BasicDownloadPresenterFactory();
-        private UpdateDownloaderFactory _updateDownloaderFactory = new BasicUpdateDownloaderFactory();
+        private SynchronizationContext _context;
+        private InnerLogger _innerLogger;
+        private bool _initialized;
+        private DoneDelegate _done;
+        private bool _isWinFormsApplication;
+        private bool _downloadAndRunWasCall;
         private System.Timers.Timer _remindLaterTimer;
 
-        internal InitSettings Settings { get; set; } = new InitSettings();
+        internal AppCastRetriever AppCastRetriever;
+        internal bool DontExit;
 
-        internal ILogger Logger
+#pragma warning disable 1591
+        public InitSettings Settings { get; internal set; }
+        public ILogger Logger
         {
             get { return _innerLogger; }
             set { _innerLogger.OutterLogger = value; }
         }
-        internal bool ReportInfos
-        {
-            get { return _reportLevels.Get((int)ReportLevel.Info); }
-            set { _reportLevels.Set((int)ReportLevel.Info, value); }
-        }
-        internal bool ReportErrors
-        {
-            get { return _reportLevels.Get((int)ReportLevel.Error); }
-            set { _reportLevels.Set((int)ReportLevel.Error, value); }
-        }
-        internal UpdateFormPresenterFactory UpdateFormPresenterFactory
-        {
-            get { return _updateFormPresenterFactory; }
-            set { _updateFormPresenterFactory = value ?? new BasicUpdateFormPresenterFactory(); }
-        }
-        internal DownloadPresenterFactory DownloadPresenterFactory
-        {
-            get { return _downloadPresenterFactory; }
-            set { _downloadPresenterFactory = value ?? new BasicDownloadPresenterFactory(); }
-        }
-        internal UpdateDownloaderFactory UpdateDownloaderFactory
-        {
-            get { return _updateDownloaderFactory; }
-            set { _updateDownloaderFactory = value ?? new BasicUpdateDownloaderFactory(); }
-        }
 
-        internal bool Running;
-        internal bool IsWinFormsApplication;
-        internal Version CurrentVersion;
-        internal string DownloadURL;
-        internal string ChangelogURL;
-        internal string Checksum;
-        internal string HashingAlgorithm;
-        internal string InstallerArgs;
-        internal string RegistryLocation;
-        internal Version InstalledVersion;
+        public bool Running { get; internal set; }
+        public string RegistryLocation { get; internal set; }
+        public Version InstalledVersion { get; internal set; }
+        public Version CurrentVersion { get; internal set; }
+        public string DownloadURL { get; internal set; }
+        public string ChangelogURL { get; internal set; }
+        public string Checksum { get; internal set; }
+        public string HashingAlgorithm { get; internal set; }
+        public string InstallerArgs { get; internal set; }
+#pragma warning restore 1591
 
         /// <summary>
         ///     Current active AutoUpdater.NET instance.
@@ -104,72 +83,162 @@ namespace AutoUpdaterDotNET
         /// <summary>
         ///     Start checking for new version of application and display dialog to the user if update is available.
         /// </summary>
-        /// <param name="myAssembly">Assembly to use for version checking.</param>
-        public static void Start(Assembly myAssembly = null)
+        /// <param name="done">Call when it is done.</param>
+        public static void Start(DoneDelegate done = null)
         {
-            Current.StartChecking(myAssembly: myAssembly);
+            Current.StartChecking(done: done);
         }
 
         /// <summary>
         ///     Start checking for new version of application and display dialog to the user if update is available.
         /// </summary>
         /// <param name="appCast">URL of the xml file that contains information about latest version of the application.</param>
-        /// <param name="myAssembly">Assembly to use for version checking.</param>
-        public static void Start(string appCast, Assembly myAssembly = null)
+        /// <param name="done">Call when it is done.</param>
+        public static void Start(string appCast, DoneDelegate done = null)
         {
-            Current.StartChecking(appCast, myAssembly);
+            Current.StartChecking(appCast, done);
         }
 
-        internal AutoUpdater()
+#pragma warning disable 1591
+        internal AutoUpdater(InitSettings settings = null)
         {
-            var reportLevels = _reportLevels;
-            _innerLogger = new InnerLogger(rl => reportLevels.Get((int) rl));
+            Settings = settings ?? new InitSettings();
+            Settings.UpdateFormPresenterFactory = settings?.UpdateFormPresenterFactory ?? new BasicUpdateFormPresenterFactory();
+            Settings.DownloadPresenterFactory = settings?.DownloadPresenterFactory ?? new BasicDownloadPresenterFactory();
+            Settings.FileDownloaderFactory = settings?.FileDownloaderFactory ?? new BasicFileDownloaderFactory();
+            Settings.UpdateLauncherFactory = settings?.UpdateLauncherFactory ?? new BasicUpdateLauncherFactory();
+            AppCastRetriever = new BasicAppCastRetriever();
+            _context = SynchronizationContext.Current;
+
+            Initialize();
         }
 
-        internal void StartChecking(string appCast = null, Assembly myAssembly = null)
+        internal void Initialize()
         {
+            _initialized = false;
+            var reportLevels = Settings.ReportLevels;
+            _innerLogger = new InnerLogger(rl => reportLevels.Get((int) rl))
+            {
+                OutterLogger = Settings.SetLogger
+            };
+
+            if (Settings.MainAssembly == null)
+                Settings.MainAssembly = Assembly.GetEntryAssembly();
+            if (Settings.MainAssembly == null)
+            {
+                Logger.Error(States.NullEntryAssemblyError);
+                return;
+            }
+
+            var installedAppInfo = LoadInstalledAppInformation(Settings.MainAssembly, Settings.AppTitle, Settings.InstalledVersionProvider);
+            Settings.AppTitle = installedAppInfo.AppTitle;
+            InstalledVersion = installedAppInfo.InstalledVersion;
+            RegistryLocation = installedAppInfo.RegistryAppInfoLocation;
+
+            _isWinFormsApplication = Application.MessageLoop;
+            _initialized = true;
+        }
+
+        internal void StartChecking(string appCast = null, DoneDelegate done = null)
+        {
+            if (!_initialized) { done?.Invoke(); return; }
+            _done = () =>
+            {
+                Running = false;
+                done?.Invoke();
+            };
             lock (_initLocker)
             {
-                if (Running) return;
+                if (Running) {
+                    Logger.Info(States.StartCheckIgnoredWhileRunning);
+                    _done?.Invoke(); return;
+                }
                 Running = true;
             }
+
             if (Settings.Mandatory && _remindLaterTimer != null)
             {
                 _remindLaterTimer.Stop();
                 _remindLaterTimer.Close();
                 _remindLaterTimer = null;
             }
-            if (_remindLaterTimer != null) return;
+            if (_remindLaterTimer != null)
+            {
+                Logger.Info(States.StartCheckIgnoredForRemindLater);
+                _done?.Invoke(); return;
+            }
 
             Logger.Info(States.CheckForUpdateStarted);
+            _downloadAndRunWasCall = false;
 
-            if(appCast != null)
+            if (appCast != null)
                 Settings.AppCastURL = appCast;
-
-            IsWinFormsApplication = Application.MessageLoop;
 
             var backgroundWorker = new BackgroundWorker();
             backgroundWorker.DoWork += BackgroundWorkerDoWork;
             backgroundWorker.RunWorkerCompleted += BackgroundWorkerOnRunWorkerCompleted;
 
-            backgroundWorker.RunWorkerAsync(myAssembly ?? Assembly.GetEntryAssembly());
+            backgroundWorker.RunWorkerAsync();
         }
 
-        private void ReportToUser(ReportLevel level, string caption, string message)
+        /// <summary>
+        ///     Download and execute the update file.
+        /// </summary>
+        public void DownloadAndRunTheUpdate()
         {
-            if (Settings.UnattendedMode) return;
-            if (_reportLevels.Get((int) level))
-                MessageBox.Show(message, caption, MessageBoxButtons.OK, 
-                                level == ReportLevel.Error ? MessageBoxIcon.Error : MessageBoxIcon.Information);
+            try
+            {
+                Logger.Info(States.DownloadingUpdate, Resources.DownloadingMessage);
+                var presenter = Settings.DownloadPresenterFactory.Create();
+                Settings.FileDownloaderFactory
+                    .Create(presenter, !Settings.Mandatory, Settings.Proxy)
+                    .Download(DownloadURL, Settings.DownloadPath, UpdateDownloadFinished);
+                _downloadAndRunWasCall = true;
+            }
+            catch (Exception e)
+            {
+                Logger.Error(States.UpdateDownloadError, Resources.DownloadErrorMessage, e);
+            }
+        }
+
+        protected virtual void ReportToUser(ReportLevel level, string caption, string message)
+        {
+            CallSync(s =>
+            {
+                if (Settings.UnattendedMode) return;
+                if (Settings.ReportLevels.Get((int)level))
+                    MessageBox.Show(message, caption, MessageBoxButtons.OK,
+                        level == ReportLevel.Error ? MessageBoxIcon.Error : MessageBoxIcon.Information);
+            });
+        }
+
+        private void CallSync(SendOrPostCallback action, object s = null)
+        {
+            if (_context == null)
+                action(s);
+            else
+                try {
+                    _context.Send(action, s);
+                } catch (InvalidAsynchronousStateException) {
+                    action(s);
+                }
+        }
+
+        private void CallAsync(SendOrPostCallback action, object s = null)
+        {
+            if (_context == null)
+                action(s);
+            else
+                try {
+                    _context.Post(action, s);
+                } catch (InvalidAsynchronousStateException) {
+                    action(s);
+                }
         }
 
         private void BackgroundWorkerDoWork(object sender, DoWorkEventArgs e)
         {
             e.Cancel = false;
-            var installedAppInfo = LoadInstalledAppInformation((Assembly)e.Argument, Settings.AppTitle, Settings.InstalledVersionProvider);
-            Settings.AppTitle = installedAppInfo.AppTitle;
-            InstalledVersion = installedAppInfo.InstalledVersion;
-            RegistryLocation = installedAppInfo.RegistryAppInfoLocation;
 
             UpdateInfoEventArgs appCastInfo;
             if(!GetTheAppCastInformation(Settings.AppCastURL, Settings.Proxy, Settings.ParseUpdateInfoEvent, out appCastInfo)) return;
@@ -212,13 +281,6 @@ namespace AutoUpdaterDotNET
             e.Result = appCastInfo;
         }
 
-        private class InstalledAppInformation
-        {
-            public string AppTitle { get; set; }
-            public Version InstalledVersion { get; set; }
-            public string RegistryAppInfoLocation { get; set; }
-        }
-
         private static InstalledAppInformation LoadInstalledAppInformation(Assembly mainAssembly, string appTitle, InstalledVersionProviderDelegate installedVersionProvider)
         {
             var info = new InstalledAppInformation();
@@ -244,7 +306,7 @@ namespace AutoUpdaterDotNET
         {
             info = null;
             var appCast = RetrieveTheAppCast(appCastUrl, proxy);
-            if (appCast == null) return false;
+            //if (appCast == null) return false;
 
             Logger.Info(States.AppCastRetrievalDone, $"baseUri:[{appCast.BaseUri}]\nremoteData:{appCast.RemoteData}");
 
@@ -252,13 +314,11 @@ namespace AutoUpdaterDotNET
                 ExecuteUpdateCustomInfoParseEven(appCast, parseUpdateInfoHandler, out info);
             else
                 ExecuteUpdateXmlInfoParse(appCast, out info);
-            if (info == null) return false;
+            //if (info == null) return false;
 
             if (info.CurrentVersion == null || string.IsNullOrEmpty(info.DownloadURL))
-            {
-                Logger.Error(States.AppCastInvalidDataError);
-                return false;
-            }
+                throw new UpdaterException(States.AppCastInvalidDataError);
+
             Logger.Info(States.AppCastDataValidationDone);
 
             info.DownloadURL = GetURL(appCast.BaseUri, info.DownloadURL);
@@ -266,14 +326,7 @@ namespace AutoUpdaterDotNET
             return true;
         }
 
-        private class RegisteredAppInformation
-        {
-            public bool SkipVersions { get; set; }
-            public Version MinimalVersion { get; set; } = new Version();
-            public DateTime RemindLaterTime { get; set; } = DateTime.MinValue;
-        }
-
-        private static RegisteredAppInformation GetRegisteredAppInformation(string regAppInfoKeyName)
+        protected virtual RegisteredAppInformation GetRegisteredAppInformation(string regAppInfoKeyName)
         {
             var ri = new RegisteredAppInformation();
             using (var regAppInfoKey = Registry.CurrentUser.OpenSubKey(regAppInfoKeyName))
@@ -296,7 +349,7 @@ namespace AutoUpdaterDotNET
             return ri;
         }
 
-        private void ResetRegSkipVersion(Version minimalVersion)
+        protected virtual void ResetRegSkipVersion(Version minimalVersion)
         {
             using (var updateKeyWrite = Registry.CurrentUser.CreateSubKey(RegistryLocation))
             {
@@ -316,51 +369,15 @@ namespace AutoUpdaterDotNET
             return (Attribute)attributes[0];
         }
 
-        private class AppCast
-        {
-            public string RemoteData;
-            public Uri BaseUri;
-        }
-
         private AppCast RetrieveTheAppCast(string appCastUrl, IWebProxy proxy)
         {
-            WebResponse webResponse;
-            try
-            {
-                var webRequest = WebRequest.Create(appCastUrl);
-                webRequest.CachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.NoCacheNoStore);
-                if (proxy != null)
-                    webRequest.Proxy = proxy;
-                webResponse = webRequest.GetResponse();
+            try {
+                return AppCastRetriever.Retrieve(appCastUrl, proxy);
             }
             catch (Exception e)
             {
-                Logger.Error(States.AppCastRetrievalError, exception: e);
-                return null;
+                throw new UpdaterException(States.AppCastRetrievalError, exception: e);
             }
-            var appCast = new AppCast();
-            try
-            {
-                appCast.BaseUri = webResponse.ResponseUri;
-                using (var reader = new StreamReader(webResponse.GetResponseStream()))
-                {
-                    appCast.RemoteData = reader.ReadToEnd();
-                }
-            }
-            catch (Exception e)
-            {
-                Logger.Error(States.AppCastReadDataError, exception: e);
-                return null;
-            }
-            finally
-            {
-                try
-                {
-                    webResponse.Close();
-                }
-                catch {/*ignored*/}
-            }
-            return appCast;
         }
 
         private void ExecuteUpdateCustomInfoParseEven(AppCast appCast, ParseUpdateInfoHandler parseUpdateInfoHandler, out UpdateInfoEventArgs info)
@@ -369,13 +386,13 @@ namespace AutoUpdaterDotNET
             try
             {
                 var parseArgs = new ParseUpdateInfoEventArgs(appCast.RemoteData);
-                parseUpdateInfoHandler(parseArgs);
+                CallSync(s => parseUpdateInfoHandler((ParseUpdateInfoEventArgs)s), parseArgs);
                 info = parseArgs.UpdateInfo;
                 Logger.Info(States.AppCastCustomInfoParseEventDone);
             }
             catch (Exception e)
             {
-                Logger.Error(States.AppCastCustomInfoParseEventError, exception: e);
+                throw new UpdaterException(States.AppCastCustomInfoParseEventError, exception: e);
             }
         }
 
@@ -385,7 +402,7 @@ namespace AutoUpdaterDotNET
             try
             {
                 var appCastXmlDoc = new XmlDocument();
-                appCastXmlDoc.Load(appCast.RemoteData);
+                appCastXmlDoc.LoadXml(appCast.RemoteData);
                 var appCastItems = appCastXmlDoc.SelectNodes("item");
                 if (appCastItems == null) return;
                 info = new UpdateInfoEventArgs();
@@ -395,7 +412,7 @@ namespace AutoUpdaterDotNET
             }
             catch (Exception exc)
             {
-                Logger.Error(States.AppCastXmlInfoParseError, exception: exc);
+                throw new UpdaterException(States.AppCastXmlInfoParseError, exception: exc);
             }
         }
 
@@ -437,108 +454,93 @@ namespace AutoUpdaterDotNET
             return url;
         }
 
-        private void BackgroundWorkerOnRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs runWorkerCompletedEventArgs)
+        private void BackgroundWorkerOnRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs workArgs)
         {
             try
             {
-                if (runWorkerCompletedEventArgs.Cancelled) return;
-                if (runWorkerCompletedEventArgs.Result is DateTime)
+                if (workArgs.Cancelled || workArgs.Error != null)
                 {
-                    SetTimer((DateTime)runWorkerCompletedEventArgs.Result);
+                    if (workArgs.Error == null) return;
+                    var myExc = workArgs.Error as UpdaterException;
+                    if (myExc != null)
+                        Logger.Error(myExc.State, myExc.Message, myExc.InnerException);
+                    else
+                        Logger.Error(States.UnexpectedCheckProcessError, exception: workArgs.Error);
+                }
+                else if (workArgs.Result is DateTime)
+                {
+                    SetTimer((DateTime) workArgs.Result);
                 }
                 else
                 {
-                    var updateInfo = runWorkerCompletedEventArgs.Result as UpdateInfoEventArgs;
+                    var updateInfo = workArgs.Result as UpdateInfoEventArgs;
                     if (Settings.CheckForUpdateEvent != null)
-                    {
-                        try
+                        CallSync(s =>
                         {
-                            Settings.CheckForUpdateEvent(updateInfo);
-                        }
-                        catch (Exception e)
-                        {
-                            Logger.Error(States.CheckForUpdateEventError, exception: e);
-                        }
-                    }
+                            try
+                            {
+                                Settings.CheckForUpdateEvent(updateInfo);
+                            }
+                            catch (Exception e)
+                            {
+                                Logger.Error(States.CheckForUpdateEventError, exception: e);
+                            }
+                        });
                     else
                     {
                         if (updateInfo == null)
                         {
                             Logger.Error(States.UpdateCheckFailed, Resources.UpdateCheckFailedMessage);
-                            ReportToUser(ReportLevel.Error, Resources.UpdateCheckFailedCaption, Resources.UpdateCheckFailedMessage);
-                            return;
+                            ReportToUser(ReportLevel.Error, Resources.UpdateCheckFailedCaption,
+                                Resources.UpdateCheckFailedMessage);
                         }
-                        if (updateInfo.IsUpdateAvailable)
+                        else if (!updateInfo.IsUpdateAvailable)
+                        {
+                            Logger.Info(States.UnavailableUpdate, Resources.UpdateUnavailableMessage);
+                            ReportToUser(ReportLevel.Info, Resources.UpdateUnavailableCaption,
+                                Resources.UpdateUnavailableMessage);
+                        }
+                        else
                         {
                             if (Settings.UnattendedMode)
-                                AutoProcessTheUpdate();
+                                DownloadAndRunTheUpdate();
                             else
                                 LetUserToProcessTheUpdate();
-                            return;
                         }
-                        Logger.Info(States.UpdateUnavailable, Resources.UpdateUnavailableMessage);
-                        ReportToUser(ReportLevel.Info, Resources.UpdateUnavailableCaption, Resources.UpdateUnavailableMessage);
                     }
                 }
             }
+            catch (Exception exc)
+            {
+                Logger.Error(States.UnexpectedCheckProcessError, exception: exc);
+            }
             finally
             {
-                Running = false;
+                if(_downloadAndRunWasCall == false)
+                    _done?.Invoke();
             }
         }
 
-        internal void SetTimer(DateTime remindLater)
+        private void SetTimer(DateTime remindLater)
         {
             var timeSpan = remindLater - DateTime.Now;
-
-            var context = SynchronizationContext.Current;
-
             _remindLaterTimer = new System.Timers.Timer
             {
                 Interval = (int)timeSpan.TotalMilliseconds,
                 AutoReset = false
             };
-
             _remindLaterTimer.Elapsed += delegate
             {
                 _remindLaterTimer = null;
-                if (context != null)
-                {
-                    try
-                    {
-                        context.Send(state => Start(), null);
-                    }
-                    catch (InvalidAsynchronousStateException)
-                    {
-                        Start();
-                    }
-                }
-                else
-                {
-                    Start();
-                }
+                CallSync(s => Start());
             };
-
             _remindLaterTimer.Start();
             Logger.Info(States.CheckForUpdateDelayed, $"Start delayed by: {timeSpan.TotalSeconds:F3} seconds");
         }
 
-        private void AutoProcessTheUpdate()
-        {
-            try
-            {
-                Logger.Info(States.DownloadingUpdate, Resources.DownloadingMessage);
-                DownloadAndRunTheUpdate();
-            }
-            catch (Exception e)
-            {
-                Logger.Error(States.UpdateDownloadError, Resources.DownloadErrorMessage, e);
-            }
-        }
-
         private void LetUserToProcessTheUpdate()
         {
-            if (!IsWinFormsApplication)
+            if (!_isWinFormsApplication)
                 Application.EnableVisualStyles();
             if (Thread.CurrentThread.GetApartmentState().Equals(ApartmentState.STA))
                 ShowUpdateForm();
@@ -556,9 +558,11 @@ namespace AutoUpdaterDotNET
         {
             try
             {
-                var formPresenter = UpdateFormPresenterFactory.Create();
+                var formPresenter = Settings.UpdateFormPresenterFactory.Create();
                 var r = formPresenter.ShowModal(Settings.AppTitle, CurrentVersion, InstalledVersion,
-                    Settings.ShowSkipOption, Settings.LetUserSelectRemindLater && Settings.ShowRemindLaterOption, ChangelogURL);
+                                                Settings.ShowSkipOption, 
+                                                Settings.LetUserSelectRemindLater && Settings.ShowRemindLaterOption, 
+                                                ChangelogURL);
                 switch (r)
                 {
                     case UpdateFormResult.Skip:
@@ -585,7 +589,7 @@ namespace AutoUpdaterDotNET
             }
         }
 
-        private void SetupVersionSkipping()
+        protected virtual void SetupVersionSkipping()
         {
             using (var updateKey = Registry.CurrentUser.CreateSubKey(RegistryLocation))
                 if (updateKey != null)
@@ -595,7 +599,7 @@ namespace AutoUpdaterDotNET
                 }
         }
 
-        private void SetupLaterReminder(RemindLaterFormat remindLaterFormat, int remindLaterAt)
+        protected virtual void SetupLaterReminder(RemindLaterFormat remindLaterFormat, int remindLaterAt)
         {
             Settings.RemindLaterTimeSpan = remindLaterFormat;
             Settings.RemindLaterAt = remindLaterAt;
@@ -622,23 +626,20 @@ namespace AutoUpdaterDotNET
             }
         }
 
-        /// <summary>
-        ///     Download the update and execute the installer when download completes.
-        /// </summary>
-        public void DownloadAndRunTheUpdate()
-        {
-            UpdateDownloaderFactory
-                .Create(DownloadPresenterFactory, !Settings.Mandatory, Settings.Proxy)
-                .Download(DownloadURL, Settings.DownloadPath, UpdateDownloadFinished);
-        }
-
         private void UpdateDownloadFinished(string updateFileName, Exception error)
         {
-            if (!DownloadResultOK(updateFileName, error)) return;
-            if (!ValidateFileIntegrity(updateFileName)) return;
-            Logger.Info(States.UpdateDownloadCompleted, Resources.DownloadCompletedMessage);
-            ExecuteUpdate(updateFileName);
-            Exit();
+            try
+            {
+                if (!DownloadResultOK(updateFileName, error)) return;
+                if (!ValidateFileIntegrity(updateFileName)) return;
+                Logger.Info(States.UpdateDownloadCompleted, Resources.DownloadCompletedMessage);
+                LaunchUpdate(updateFileName);
+                Exit();
+            }
+            finally
+            {
+                _done?.Invoke();
+            }
         }
 
         private bool DownloadResultOK(string fileName, Exception error)
@@ -654,7 +655,7 @@ namespace AutoUpdaterDotNET
             return false;
         }
 
-        private bool ValidateFileIntegrity(string fileName)
+        protected virtual bool ValidateFileIntegrity(string fileName)
         {
             if (string.IsNullOrEmpty(Checksum)) return true;
             using (var hashAlgorithm = HashAlgorithm.Create(HashingAlgorithm))
@@ -680,62 +681,11 @@ namespace AutoUpdaterDotNET
             }
         }
 
-        private void ExecuteUpdate(string updateFileName)
+        private void LaunchUpdate(string updateFileName)
         {
-            var processStartInfo = new ProcessStartInfo
-            {
-                FileName = updateFileName,
-                UseShellExecute = true,
-                Arguments = InstallerArgs.Replace("%path%", Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName))
-            };
-
-            var extension = Path.GetExtension(updateFileName);
-            if (".zip".Equals(extension, StringComparison.OrdinalIgnoreCase))
-            {
-                var zipExtractor = Path.Combine(Path.GetDirectoryName(updateFileName), "ZipExtractor.exe");
-                File.WriteAllBytes(zipExtractor, Resources.ZipExtractor);
-                var arguments = new StringBuilder($"\"{updateFileName}\" \"{Process.GetCurrentProcess().MainModule.FileName}\"");
-                IncludeCommandLineArguments(arguments);
-                processStartInfo = new ProcessStartInfo
-                {
-                    FileName = zipExtractor,
-                    UseShellExecute = true,
-                    Arguments = arguments.ToString()
-                };
-            }
-            else if (".msi".Equals(extension, StringComparison.OrdinalIgnoreCase))
-            {
-                processStartInfo = new ProcessStartInfo
-                {
-                    FileName = "msiexec",
-                    Arguments = $"/i \"{updateFileName}\""
-                };
-            }
-
-            if (Settings.RunUpdateAsAdmin)
-                processStartInfo.Verb = "runas";
-
-            try
-            {
-                Process.Start(processStartInfo);
-            }
-            catch (Win32Exception exception)
-            {
-                if (exception.NativeErrorCode != 1223)
-                    throw;
-            }
-        }
-
-        private static void IncludeCommandLineArguments(StringBuilder arguments)
-        {
-            var args = Environment.GetCommandLineArgs();
-            for (var i = 1; i < args.Length; i++)
-            {
-                if (i.Equals(1))
-                    arguments.Append(" \"");
-                arguments.Append(args[i]);
-                arguments.Append(i.Equals(args.Length - 1) ? "\"" : " ");
-            }
+            Settings.UpdateLauncherFactory
+                .Create()
+                .Launch(updateFileName, InstallerArgs, Settings.RunUpdateAsAdmin);
         }
 
         /// <summary>
@@ -743,22 +693,23 @@ namespace AutoUpdaterDotNET
         /// </summary>
         private void Exit()
         {
-            if (Settings.ApplicationExitEvent == null)
-                DoAutoExit();
-            else
-                try
-                {
-                    Logger.Info(States.ApplicationExitEvent);
-                    Settings.ApplicationExitEvent();
-                }
-                catch (Exception e)
-                {
-                    Logger.Error(States.ApplicationExitEventError, exception: e);
-                    DoAutoExit();
-                }
+            CallSync(s =>
+            {
+                if (Settings.ApplicationExitEvent != null)
+                    try
+                    {
+                        Logger.Info(States.ApplicationExitEvent);
+                        Settings.ApplicationExitEvent();
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Error(States.ApplicationExitEventError, exception: e);
+                    }   
+                DoAutoExit();         
+            });
         }
 
-        private void DoAutoExit()
+        protected virtual void DoAutoExit()
         {
             Logger.Info(States.ApplicationAutoExit);
             var currentProcess = Process.GetCurrentProcess();
@@ -783,7 +734,7 @@ namespace AutoUpdaterDotNET
                     process.Kill(); //TODO show UI message asking user to close program himself instead of silently killing it
             }
 
-            if (IsWinFormsApplication)
+            if (_isWinFormsApplication)
             {
                 MethodInvoker methodInvoker = Application.Exit;
                 methodInvoker.Invoke();
@@ -802,34 +753,31 @@ namespace AutoUpdaterDotNET
         }
     }
 
-#pragma warning disable 1591
-    public delegate Version InstalledVersionProviderDelegate();
-
-    public delegate void ApplicationExitEventHandler();
-    public delegate void CheckForUpdateEventHandler(UpdateInfoEventArgs args);
-    public delegate void ParseUpdateInfoHandler(ParseUpdateInfoEventArgs args);
-#pragma warning restore 1591
-
-    /// <summary>
-    ///     Enum representing the remind later time span.
-    /// </summary>
-    public enum RemindLaterFormat
+    internal class InstalledAppInformation
     {
-        /// <summary>
-        ///     Represents the time span in minutes.
-        /// </summary>
-        Minutes,
-
-        /// <summary>
-        ///     Represents the time span in hours.
-        /// </summary>
-        Hours,
-
-        /// <summary>
-        ///     Represents the time span in days.
-        /// </summary>
-        Days
+        public string AppTitle { get; set; }
+        public Version InstalledVersion { get; set; }
+        public string RegistryAppInfoLocation { get; set; }
     }
+
+    public class RegisteredAppInformation
+    {
+        public bool SkipVersions { get; set; }
+        public Version MinimalVersion { get; set; } = new Version();
+        public DateTime RemindLaterTime { get; set; } = DateTime.MinValue;
+    }
+
+    internal class UpdaterException : Exception
+    {
+        public States State { get; }
+
+        public UpdaterException(States state, string message = null, Exception exception = null)
+            : base(message, exception)
+        {
+            State = state;
+        }
+    }
+#pragma warning restore 1591
 
 
     /// <summary>
@@ -882,6 +830,7 @@ namespace AutoUpdaterDotNET
         /// </summary>
         public string HashingAlgorithm { get; set; }
     }
+
 
     /// <summary>
     ///     An object of this class contains the AppCast file received from server..

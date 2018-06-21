@@ -2,6 +2,6 @@
 {
     internal class BasicDownloadPresenterFactory : DownloadPresenterFactory
     {
-        public UpdateDownloadPresenter Create() => new DownloadUpdateDialog();
+        public DownloadPresenter Create() => new BasicDownloadUpdateDialog();
     }
 }

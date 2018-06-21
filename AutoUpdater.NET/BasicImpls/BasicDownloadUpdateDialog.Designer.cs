@@ -1,6 +1,6 @@
 ﻿namespace AutoUpdaterDotNET.BasicImpls
 {
-    partial class DownloadUpdateDialog
+    partial class BasicDownloadUpdateDialog
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DownloadUpdateDialog));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(BasicDownloadUpdateDialog));
             this.pictureBoxIcon = new System.Windows.Forms.PictureBox();
             this.progressBar = new System.Windows.Forms.ProgressBar();
             this.labelInformation = new System.Windows.Forms.Label();
@@ -58,7 +58,7 @@
             resources.ApplyResources(this.labelSize, "labelSize");
             this.labelSize.Name = "labelSize";
             // 
-            // DownloadUpdateDialog
+            // BasicDownloadUpdateDialog
             // 
             resources.ApplyResources(this, "$this");
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -69,7 +69,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "DownloadUpdateDialog";
+            this.Name = "BasicDownloadUpdateDialog";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.DownloadUpdateDialog_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxIcon)).EndInit();
             this.ResumeLayout(false);

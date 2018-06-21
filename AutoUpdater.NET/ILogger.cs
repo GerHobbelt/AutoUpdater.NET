@@ -23,11 +23,13 @@ namespace AutoUpdaterDotNET
         void Error(States state, string message = null, Exception exception = null);
     }
 
-    internal enum ReportLevel
+#pragma warning disable 1591
+    public enum ReportLevel
     {
         Info,
         Error
     }
+#pragma warning restore 1591
 
     internal class NullLogger : ILogger
     {

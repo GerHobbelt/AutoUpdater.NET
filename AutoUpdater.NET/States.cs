@@ -6,12 +6,16 @@
     public enum States
     {
 #pragma warning disable 1591
+        NullEntryAssemblyError,
+        StartCheckIgnoredWhileRunning,
+        StartCheckIgnoredForRemindLater,
         CheckForUpdateStarted,
+        UnexpectedCheckProcessError,
         CheckForUpdateEventError,
         CheckForUpdateDelayed,
         UserUpdateFormError,
         UpdateCheckFailed,
-        UpdateUnavailable,
+        UnavailableUpdate,
         DownloadingUpdate,
         UpdateDownloadCancelled,
         UpdateDownloadCompleted,
@@ -21,7 +25,6 @@
 
         AppCastRetrievalDone,
         AppCastRetrievalError,
-        AppCastReadDataError,
 
         AppCastXmlInfoParseDone,
         AppCastCustomInfoParseEventDone,
@@ -33,7 +36,7 @@
 
         ApplicationExitEvent,
         ApplicationExitEventError,
-        ApplicationAutoExit
+        ApplicationAutoExit,
 #pragma warning restore 1591
     }
 }

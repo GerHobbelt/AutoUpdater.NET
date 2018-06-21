@@ -3,7 +3,7 @@
 namespace AutoUpdaterDotNET
 {
 #pragma warning disable 1591
-    public interface UpdateDownloadPresenter
+    public interface DownloadPresenter
     {
         AllowCancellationDelegate AllowCancellationDelegate { get; set; }
 
@@ -16,7 +16,7 @@ namespace AutoUpdaterDotNET
 
     public interface DownloadPresenterFactory
     {
-        UpdateDownloadPresenter Create();
+        DownloadPresenter Create();
     }
 #pragma warning restore 1591
 }
