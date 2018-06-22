@@ -20,6 +20,7 @@ namespace UnitTests
             var settings = AutoUpdater.InitSettings
                                         .SetTheMainAssembly(Assembly.GetCallingAssembly())
                                         .SetAppCastURL("https://raw.githubusercontent.com/asarmiento13315/AutoUpdater.NET/master/UnitTests/DownloadSamples/lastest.xml")
+                                        .EnableMandatory()
                                         .SetALogger(logger)
                                         .EnableReportAll()
                                         .EnableUnattendedMode();
@@ -48,6 +49,7 @@ namespace UnitTests
                                         .SetTheMainAssembly(Assembly.GetCallingAssembly())
                                         .SetAppCastURL("https://raw.githubusercontent.com/asarmiento13315/AutoUpdater.NET/master/UnitTests/DownloadSamples/lastest.xml")
                                         .SetDownloadPath(dir)
+                                        .EnableMandatory()
                                         .SetALogger(logger)
                                         .EnableReportAll()
                                         .EnableUnattendedMode()

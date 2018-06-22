@@ -3,5 +3,4 @@
   <version>2.0.0.0</version>
   <url>https://github.com/asarmiento13315/AutoUpdater.NET/blob/master/UnitTests/DownloadSamples/update.zip?raw=true</url>
   <args>setup.exe</args>
-  <mandatory>true</mandatory>
 </item>
