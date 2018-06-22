@@ -63,7 +63,6 @@
     <Compile Include="IntegrationTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="UnitTests.pfx" />
     <None Include="UnitTests.snk" />
   </ItemGroup>
   <ItemGroup>

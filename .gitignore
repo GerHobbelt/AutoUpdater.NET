@@ -253,7 +253,7 @@ paket-files/
 
 *.snk
 AutoUpdater.NET/build/lib/
-AutoUpdaterTest/update
-!AutoUpdaterTest/_TestInstaller
-AutoUpdaterTest/_TestInstaller/*
-!AutoUpdaterTest/_TestInstaller/Installer.zip
+AutoUpdaterWinFormLiveTest/update
+!AutoUpdaterWinFormLiveTest/_TestInstaller
+AutoUpdaterWinFormLiveTest/_TestInstaller/*
+!AutoUpdaterWinFormLiveTest/_TestInstaller/Installer.zip

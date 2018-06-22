@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <item>
   <version>2.0.0.0</version>
-  <url>https://github.com/asarmiento13315/AutoUpdater.NET/blob/master/UnitTests/DownloadSamples/update.zip?raw=true</url>
+  <url>https://github.com/asarmiento13315/AutoUpdater.NET/blob/master/UnitTests/DownloadSamples/installer.zip?raw=true</url>
   <args>setup.exe</args>
 </item>

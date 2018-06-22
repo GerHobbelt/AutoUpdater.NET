@@ -64,9 +64,9 @@ namespace UnitTests
             Assert.AreEqual(0, logger.ErrorCount, "No errors were expected");
             Assert.AreEqual(new Version(1, 0, 0, 0), updater.InstalledVersion);
             Assert.AreEqual(new Version(2, 0, 0, 0), updater.CurrentVersion);
-            Assert.AreEqual("https://github.com/asarmiento13315/AutoUpdater.NET/blob/master/UnitTests/DownloadSamples/update.zip?raw=true", updater.DownloadURL);
-            Assert.AreEqual(dir + "\\update.zip", launcherMock.updateFileName);
-            Assert.IsTrue(File.Exists(dir + "\\update.zip"));
+            Assert.AreEqual("https://github.com/asarmiento13315/AutoUpdater.NET/blob/master/UnitTests/DownloadSamples/installer.zip?raw=true", updater.DownloadURL);
+            Assert.AreEqual(dir + "\\installer.zip", launcherMock.updateFileName);
+            Assert.IsTrue(File.Exists(dir + "\\installer.zip"));
             Assert.IsTrue(updater.DidExit);
         }
     }
