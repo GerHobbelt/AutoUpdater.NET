@@ -28,28 +28,35 @@ namespace AutoUpdaterDotNET.BasicImpls
 
         public virtual void Download(string fromUrl, string downloadPath, DownloadFinishHandler finishHandler)
         {
-            var uri = new Uri(fromUrl);
-            _downloadPath = downloadPath;
-            _finishHandler = finishHandler;
-            _waitModal.Reset();
-
-            if (string.IsNullOrEmpty(_downloadPath))
-                _tempFile = Path.GetTempFileName();
-            else
+            try
             {
-                _tempFile = Path.Combine(_downloadPath, $"{Guid.NewGuid().ToString()}.tmp");
-                Directory.CreateDirectory(_downloadPath);
+                var uri = new Uri(fromUrl);
+                _downloadPath = downloadPath;
+                _finishHandler = finishHandler;
+                _waitModal.Reset();
+
+                if (string.IsNullOrEmpty(_downloadPath))
+                    _tempFile = Path.GetTempFileName();
+                else
+                {
+                    _tempFile = Path.Combine(_downloadPath, $"{Guid.NewGuid().ToString()}.tmp");
+                    Directory.CreateDirectory(_downloadPath);
+                }
+
+                var webClient = SetupWebClient();
+                webClient.DownloadFileAsync(uri, _tempFile);
+
+                try {
+                    _presenter?.ShowModal();
+                } catch {/*ignored*/}
+
+                if (webClient.IsBusy) // presenter wasn't a good Modal :/
+                    ModallyWaitForDownloadCompleted();
             }
-
-            var webClient = SetupWebClient();
-            webClient.DownloadFileAsync(uri, _tempFile);
-
-            try {
-                _presenter?.ShowModal();
-            } catch {/*ignored*/}
-
-            if (webClient.IsBusy) // presenter wasn't a good Modal :/
-                ModallyWaitForDownloadCompleted();
+            catch (Exception e)
+            {
+                finishHandler(string.Empty, e);
+            }
         }
 
         private MyWebClient SetupWebClient()
@@ -92,7 +99,9 @@ namespace AutoUpdaterDotNET.BasicImpls
         {
             _waitModal.Set();
             _allowCancellation = true;
-            _presenter?.Close();
+            try {
+                _presenter?.Close();
+            } catch {/*ignored*/}
 
             if (args.Cancelled || args.Error != null)
             {
@@ -102,7 +111,7 @@ namespace AutoUpdaterDotNET.BasicImpls
 
             try
             {
-                var webClient = (MyWebClient)sender;
+                var webClient = (MyWebClient) sender;
                 var updateFile = Path.Combine(string.IsNullOrEmpty(_downloadPath)
                                                     ? Path.GetTempPath()
                                                     : _downloadPath,

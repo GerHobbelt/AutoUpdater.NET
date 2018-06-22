@@ -26,7 +26,7 @@ namespace AutoUpdaterDotNET
         private static readonly object _initLocker = new object();
         private static volatile AutoUpdater _current = null;
 
-        private SynchronizationContext _context;
+        private readonly SynchronizationContext _context;
         private InnerLogger _innerLogger;
         private bool _initialized;
         private DoneDelegate _done;
@@ -474,16 +474,16 @@ namespace AutoUpdaterDotNET
                 else
                 {
                     var updateInfo = workArgs.Result as UpdateInfoEventArgs;
-                    if (Settings.CheckForUpdateEvent != null)
+                    if (Settings.CustomUpdateCheckEvent != null)
                         CallSync(s =>
                         {
                             try
                             {
-                                Settings.CheckForUpdateEvent(updateInfo);
+                                Settings.CustomUpdateCheckEvent(updateInfo);
                             }
                             catch (Exception e)
                             {
-                                Logger.Error(States.CheckForUpdateEventError, exception: e);
+                                Logger.Error(States.CustomUpdateCheckEventError, exception: e);
                             }
                         });
                     else
@@ -633,8 +633,17 @@ namespace AutoUpdaterDotNET
                 if (!DownloadResultOK(updateFileName, error)) return;
                 if (!ValidateFileIntegrity(updateFileName)) return;
                 Logger.Info(States.UpdateDownloadCompleted, Resources.DownloadCompletedMessage);
+
                 LaunchUpdate(updateFileName);
                 Exit();
+            }
+            catch (Exception e)
+            {
+                var myExc = e as UpdaterException;
+                if (myExc != null)
+                    Logger.Error(myExc.State, myExc.Message, myExc.InnerException);
+                else
+                    Logger.Error(States.UnexpectedUpdateProcessError, exception: e);
             }
             finally
             {
@@ -650,7 +659,7 @@ namespace AutoUpdaterDotNET
                 ReportToUser(ReportLevel.Error, Resources.UpdateCheckFailedCaption, Resources.UpdateCheckFailedMessage);
                 return false;
             }
-            if (fileName != null) return true;
+            if (!string.IsNullOrEmpty(fileName)) return true;
             Logger.Info(States.UpdateDownloadCancelled);
             return false;
         }
@@ -683,9 +692,17 @@ namespace AutoUpdaterDotNET
 
         private void LaunchUpdate(string updateFileName)
         {
-            Settings.UpdateLauncherFactory
-                .Create()
-                .Launch(updateFileName, InstallerArgs, Settings.RunUpdateAsAdmin);
+            try
+            {
+                Settings.UpdateLauncherFactory
+                    .Create()
+                    .Launch(updateFileName, InstallerArgs, Settings.RunUpdateAsAdmin, Settings.UnattendedMode);
+                Logger.Info(States.LaunchUpdateDone);
+            }
+            catch (Exception e)
+            {
+                throw new UpdaterException(States.LaunchUpdateError, exception: e);
+            }
         }
 
         /// <summary>

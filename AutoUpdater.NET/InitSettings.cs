@@ -41,7 +41,7 @@ namespace AutoUpdaterDotNET
         public FileDownloaderFactory FileDownloaderFactory { get; internal set; }
         public UpdateLauncherFactory UpdateLauncherFactory { get; internal set; }
         public ApplicationExitEventHandler ApplicationExitEvent { get; internal set; }
-        public CheckForUpdateEventHandler CheckForUpdateEvent { get; internal set; }
+        public CheckForUpdateEventHandler CustomUpdateCheckEvent { get; internal set; }
         public ParseUpdateInfoHandler ParseUpdateInfoEvent { get; internal set; }
 #pragma warning restore 1591
 
@@ -256,9 +256,9 @@ namespace AutoUpdaterDotNET
         /// <summary>
         ///     An event that clients can use to be notified whenever the update is checked.
         /// </summary>
-        public InitSettings SetACheckForUpdateEventHandler(CheckForUpdateEventHandler handler)
+        public InitSettings SetACustomUpdateCheckEventHandler(CheckForUpdateEventHandler handler)
         {
-            CheckForUpdateEvent = handler;
+            CustomUpdateCheckEvent = handler;
             return this;
         }
 

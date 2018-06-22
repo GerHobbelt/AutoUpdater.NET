@@ -27,7 +27,7 @@ namespace AutoUpdaterTest
             AutoUpdater.InitSettings
 
                 //Set the url of the file that contains information about latest version of the application. 
-                .SetAppCastURL("https://rbsoft.org/updates/AutoUpdaterTest.xml")
+                .SetAppCastURL("https://raw.githubusercontent.com/asarmiento13315/AutoUpdater.NET/master/UnitTests/DownloadSamples/lastest.xml")
 
                 //Want to show custom application title then uncomment below line.
                 //.SetAppTitle("My Custom Application Title")
@@ -45,10 +45,10 @@ namespace AutoUpdaterTest
                 //uncomment 3 lines below so default remind later time will be set to 1 day.
                 //.DisableLetUserSelectRemindLater()
 
-                //Don't want to show Skip button then uncomment below line.
+                //Don't want to show Skip option then uncomment below line.
                 //.DisableShowSkipOption()
 
-                //Don't want to show Remind Later button then uncomment below line.
+                //Don't want to show Remind Later option then uncomment below line.
                 //.DisableShowRemindLaterOption()
 
                 //Want to show errors then uncomment below line.
@@ -58,7 +58,7 @@ namespace AutoUpdaterTest
                 //.SetAnApplicationExitEventHandler(AutoUpdater_ApplicationExitEvent)
 
                 //Want to handle update logic yourself then uncomment below line.
-                //.SetACheckForUpdateEventHandler(AutoUpdaterOnCheckForUpdateEvent)
+                //.SetACustomUpdateCheckEventHandler(AutoUpdaterOnCustomUpdateCheckEvent)
 
                 //Want to use XML and Update file served only through Proxy.
                 //.SetProxy(new WebProxy("localproxyIP:8080", true)
@@ -66,12 +66,12 @@ namespace AutoUpdaterTest
                 //    Credentials = new NetworkCredential("domain\\user", "password")
                 //})
 
-                // Finally call Initialize to use these settings
+                // Finally call Initialize for AutoUpdater current instance to use these settings
                 .Initialize();
 
 
             //Want to check for updates frequently then uncomment following lines.
-            //System.Timers.Timer timer = new System.Timers.Timer
+            //var timer = new System.Timers.Timer
             //{
             //    Interval = 2 * 60 * 1000,
             //    SynchronizingObject = this
@@ -107,7 +107,7 @@ namespace AutoUpdaterTest
             };
         }
 
-        private void AutoUpdaterOnCheckForUpdateEvent(UpdateInfoEventArgs args)
+        private void AutoUpdaterOnCustomUpdateCheckEvent(UpdateInfoEventArgs args)
         {
             if (args != null)
             {

@@ -10,21 +10,21 @@ namespace AutoUpdaterDotNET.BasicImpls
 #pragma warning disable 1591
     public class BasicUpdateLaucher: UpdateLauncher
     {
-        public void Launch(string updateFileName, string installArguments, bool runAsAdmin)
+        public void Launch(string fileName, string args, bool ra, bool unattended)
         {
             var processStartInfo = new ProcessStartInfo
             {
-                FileName = updateFileName,
+                FileName = fileName,
                 UseShellExecute = true,
-                Arguments = installArguments.Replace("%path%", Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName))
+                Arguments = args.Replace("%path%", Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName))
             };
 
-            var extension = Path.GetExtension(updateFileName);
+            var extension = Path.GetExtension(fileName);
             if (".zip".Equals(extension, StringComparison.OrdinalIgnoreCase))
             {
-                var zipExtractor = Path.Combine(Path.GetDirectoryName(updateFileName), "ZipExtractor.exe");
+                var zipExtractor = Path.Combine(Path.GetDirectoryName(fileName), "ZipExtractor.exe");
                 File.WriteAllBytes(zipExtractor, Resources.ZipExtractor);
-                var arguments = new StringBuilder($"\"{updateFileName}\" \"{Process.GetCurrentProcess().MainModule.FileName}\"");
+                var arguments = new StringBuilder($"\"{fileName}\" \"{Process.GetCurrentProcess().MainModule.FileName}\"");
                 IncludeCommandLineArguments(arguments);
                 processStartInfo = new ProcessStartInfo
                 {
@@ -35,14 +35,15 @@ namespace AutoUpdaterDotNET.BasicImpls
             }
             else if (".msi".Equals(extension, StringComparison.OrdinalIgnoreCase))
             {
+                var passive = unattended ? "/passive" : "";
                 processStartInfo = new ProcessStartInfo
                 {
                     FileName = "msiexec",
-                    Arguments = $"/i \"{updateFileName}\""
+                    Arguments = $"/i {passive} \"{fileName}\""
                 };
             }
 
-            if (runAsAdmin)
+            if (ra)
                 processStartInfo.Verb = "runas";
 
             try

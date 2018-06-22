@@ -250,7 +250,10 @@ paket-files/
 # JetBrains Rider
 .idea/
 *.sln.iml
-*.snk
 
+*.snk
 AutoUpdater.NET/build/lib/
-AutoUpdater.NET/Resources/ZipExtractor*.*
+AutoUpdaterTest/update
+!AutoUpdaterTest/_TestInstaller
+AutoUpdaterTest/_TestInstaller/*
+!AutoUpdaterTest/_TestInstaller/Installer.zip

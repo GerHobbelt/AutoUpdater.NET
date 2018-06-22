@@ -32,7 +32,7 @@ namespace UnitTests
             Assert.AreEqual(0, logger.ErrorCount, "No errors were expected");
             Assert.AreEqual(new Version(4,0,0,0), updater.InstalledVersion);
             Assert.AreEqual(new Version(2,0,0,0), updater.CurrentVersion);
-            Assert.AreEqual("refresh", updater.InstallerArgs);
+            Assert.AreEqual("setup.exe", updater.InstallerArgs);
             Assert.IsTrue(logger.LoggedStates.Contains(States.UnavailableUpdate), "Expected unavailable update state");
         }
 
@@ -62,21 +62,21 @@ namespace UnitTests
             Assert.AreEqual(0, logger.ErrorCount, "No errors were expected");
             Assert.AreEqual(new Version(1, 0, 0, 0), updater.InstalledVersion);
             Assert.AreEqual(new Version(2, 0, 0, 0), updater.CurrentVersion);
-            Assert.AreEqual("https://raw.githubusercontent.com/asarmiento13315/AutoUpdater.NET/master/UnitTests/DownloadSamples/update.zip", updater.DownloadURL);
+            Assert.AreEqual("https://github.com/asarmiento13315/AutoUpdater.NET/blob/master/UnitTests/DownloadSamples/update.zip?raw=true", updater.DownloadURL);
             Assert.AreEqual(dir + "\\update.zip", launcherMock.updateFileName);
-            Assert.AreEqual(true, launcherMock.runAsAdmin);
             Assert.IsTrue(File.Exists(dir + "\\update.zip"));
+            Assert.IsTrue(updater.DidExit);
         }
     }
 
+
     public class TestableUpdater : AutoUpdater
     {
+        public bool DidExit;
+
         public TestableUpdater(InitSettings settings): base(settings) { }
 
-        protected override void DoAutoExit() // No Exit
-        {
-            //base.DoAutoExit();
-        }
+        protected override void DoAutoExit() { DidExit = true; } // No Exit
     }
 
     public class TestLogger : ILogger
@@ -109,17 +109,13 @@ namespace UnitTests
     public class UpdateLauncherMock: UpdateLauncherFactory, UpdateLauncher
     {
         public string updateFileName;
-        public string installArguments;
-        public bool runAsAdmin;
 
         public UpdateLauncher Create() => this;
 
-        public void Launch(string updateFileName, string installArguments, bool runAsAdmin)
+        public void Launch(string f, string args, bool ra, bool u)
         {
-            this.updateFileName = updateFileName;
-            this.installArguments = installArguments;
-            this.runAsAdmin = runAsAdmin;
-            Console.WriteLine($"Launching update\nfile: {updateFileName}\nargs: {installArguments}\nasAdmin: {runAsAdmin}");
+            this.updateFileName = f;
+            Console.WriteLine($"Launching update\nfile: {f}\nargs: {args}");
         }
     }
 }
