@@ -27,14 +27,14 @@ namespace AutoUpdaterTestWPF
             var timer = new DispatcherTimer {Interval = TimeSpan.FromMinutes(2)};
             timer.Tick += delegate
             {
-                AutoUpdater.Start("http://rbsoft.org/updates/AutoUpdaterTestWPF.xml");
+                AutoUpdater.Start("https://raw.githubusercontent.com/asarmiento13315/AutoUpdater.NET/master/UnitTests/DownloadSamples/wpf_lastest.xml");
             };
             timer.Start();
         }
 
         private void ButtonCheckForUpdate_Click(object sender, RoutedEventArgs e)
         {
-            AutoUpdater.Start("http://rbsoft.org/updates/AutoUpdaterTestWPF.xml");
+            AutoUpdater.Start("https://raw.githubusercontent.com/asarmiento13315/AutoUpdater.NET/master/UnitTests/DownloadSamples/wpf_lastest.xml");
         }
     }
 }

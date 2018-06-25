@@ -1,4 +1,7 @@
-﻿using System.Reflection;
+﻿using System;
+using System.IO;
+using System.Reflection;
+using System.Text;
 using System.Windows.Forms;
 using AutoUpdaterDotNET;
 using AutoUpdaterWinFormLiveTest.Properties;
@@ -156,7 +159,7 @@ namespace AutoUpdaterWinFormLiveTest
 
         private void buttonCheckForUpdate_Click(object sender, System.EventArgs e)
         {
-            var myDownloadPath = string.Empty;
+            var myDownloadPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "downloads");
 
             //Uncomment below lines to select download path where update is saved.
 
@@ -167,6 +170,7 @@ namespace AutoUpdaterWinFormLiveTest
             AutoUpdater.InitSettings
                 .SetAppCastURL("https://raw.githubusercontent.com/asarmiento13315/AutoUpdater.NET/master/UnitTests/DownloadSamples/lastest.xml")
                 .SetDownloadPath(myDownloadPath)
+                .EnableReportAll()
                 .Initialize();
 
             AutoUpdater.Start();

@@ -112,10 +112,10 @@
     <value>2.0</value>
   </resheader>
   <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="UpdateUnavailableMessage" xml:space="preserve">
     <value>No hay actualización disponible. Por favor, inténtelo de nuevo más tarde.</value>
@@ -145,12 +145,18 @@
     <value>Descargando a {0}/s</value>
   </data>
   <data name="DownloadingMessage" xml:space="preserve">
-    <value>Downloading the new version update ...</value>
+    <value>Descargando la nueva actualización de la versión ...</value>
   </data>
   <data name="DownloadCompletedMessage" xml:space="preserve">
-    <value>Download completed.</value>
+    <value>Descarga completada.</value>
   </data>
   <data name="DownloadErrorMessage" xml:space="preserve">
-    <value>Error downloading.</value>
+    <value>Error durante la descarga.</value>
+  </data>
+  <data name="UpdateManifestInvalidCaption" xml:space="preserve">
+    <value>Manifiesto de actualización inválido</value>
+  </data>
+  <data name="UpdateManifestInvalidMessage" xml:space="preserve">
+    <value>Se encontraron errores al analizar la información del manifiesto de actualización.</value>
   </data>
 </root>

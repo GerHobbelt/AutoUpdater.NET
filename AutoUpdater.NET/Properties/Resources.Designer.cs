@@ -221,6 +221,24 @@ namespace AutoUpdaterDotNET.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Invalid Update Manifest.
+        /// </summary>
+        internal static string UpdateManifestInvalidCaption {
+            get {
+                return ResourceManager.GetString("UpdateManifestInvalidCaption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There were found errors parsing the update manifest info..
+        /// </summary>
+        internal static string UpdateManifestInvalidMessage {
+            get {
+                return ResourceManager.GetString("UpdateManifestInvalidMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Update Unavailable.
         /// </summary>
         internal static string UpdateUnavailableCaption {

@@ -7,7 +7,7 @@ namespace AutoUpdaterDotNET
     {
         RemindLaterFormat RemindLaterTimeSpan { get; set; }
         int RemindLaterAt { get; set; }
-        CancellationDelegate CancellationDelegate { get; set; }
+        //CancellationDelegate CancellationDelegate { get; set; }
 
         UpdateFormResult ShowModal(string appTitle, Version currentVersion, Version installedVersion, 
                                     bool showSkipOption, bool showRemindLaterOption, string changeLogUrl);

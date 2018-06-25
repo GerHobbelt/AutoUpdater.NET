@@ -117,10 +117,9 @@ namespace AutoUpdaterDotNET
         {
             _initialized = false;
             var reportLevels = Settings.ReportLevels;
-            _innerLogger = new InnerLogger(rl => reportLevels.Get((int) rl))
-            {
-                OutterLogger = Settings.SetLogger
-            };
+            _innerLogger = new InnerLogger(rl => reportLevels.Get((int) rl), Settings.SetDefaultLogFolder);
+            if(Settings.SetLogger != null)
+                _innerLogger.OutterLogger = Settings.SetLogger;
 
             if (Settings.MainAssembly == null)
                 Settings.MainAssembly = Assembly.GetEntryAssembly();
@@ -306,15 +305,20 @@ namespace AutoUpdaterDotNET
         {
             info = null;
             var appCast = RetrieveTheAppCast(appCastUrl, proxy);
-            //if (appCast == null) return false;
 
             Logger.Info(States.AppCastRetrievalDone, $"baseUri:[{appCast.BaseUri}]\nremoteData:{appCast.RemoteData}");
 
-            if (parseUpdateInfoHandler != null)
-                ExecuteUpdateCustomInfoParseEven(appCast, parseUpdateInfoHandler, out info);
-            else
-                ExecuteUpdateXmlInfoParse(appCast, out info);
-            //if (info == null) return false;
+            try
+            {
+                if (parseUpdateInfoHandler != null)
+                    ExecuteUpdateCustomInfoParseEven(appCast, parseUpdateInfoHandler, out info);
+                else
+                    ExecuteUpdateXmlInfoParse(appCast, out info);
+            }
+            catch (Exception e)
+            {
+                throw new UpdaterException(States.AppCastInvalidDataError, exception: e);
+            }
 
             if (info.CurrentVersion == null || string.IsNullOrEmpty(info.DownloadURL))
                 throw new UpdaterException(States.AppCastInvalidDataError);
@@ -463,7 +467,13 @@ namespace AutoUpdaterDotNET
                     if (workArgs.Error == null) return;
                     var myExc = workArgs.Error as UpdaterException;
                     if (myExc != null)
+                    {
                         Logger.Error(myExc.State, myExc.Message, myExc.InnerException);
+                        if (myExc.State == States.AppCastRetrievalError)
+                            ReportToUser(ReportLevel.Error, Resources.UpdateCheckFailedCaption, Resources.UpdateCheckFailedMessage);
+                        else if (myExc.State == States.AppCastInvalidDataError)
+                            ReportToUser(ReportLevel.Error, Resources.UpdateManifestInvalidCaption, Resources.UpdateManifestInvalidMessage);
+                    }
                     else
                         Logger.Error(States.UnexpectedCheckProcessError, exception: workArgs.Error);
                 }
@@ -558,11 +568,13 @@ namespace AutoUpdaterDotNET
         {
             try
             {
+                Logger.Info(States.LettingUserToProcessTheUpdate);
                 var formPresenter = Settings.UpdateFormPresenterFactory.Create();
                 var r = formPresenter.ShowModal(Settings.AppTitle, CurrentVersion, InstalledVersion,
                                                 Settings.ShowSkipOption, 
                                                 Settings.LetUserSelectRemindLater && Settings.ShowRemindLaterOption, 
                                                 ChangelogURL);
+                Logger.Info(States.UserUpdateFormReturned, $"result: {r}");
                 switch (r)
                 {
                     case UpdateFormResult.Skip:

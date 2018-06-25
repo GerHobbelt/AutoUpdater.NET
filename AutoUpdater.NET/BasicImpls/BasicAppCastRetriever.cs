@@ -10,6 +10,9 @@ namespace AutoUpdaterDotNET.BasicImpls
     {
         public AppCast Retrieve(string appCastUrl, IWebProxy proxy)
         {
+            //ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+            //ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+
             var webRequest = WebRequest.Create(appCastUrl);
             webRequest.CachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.NoCacheNoStore);
             if (proxy != null)

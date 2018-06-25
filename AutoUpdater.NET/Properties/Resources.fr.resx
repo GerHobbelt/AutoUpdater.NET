@@ -153,4 +153,10 @@
   <data name="DownloadErrorMessage" xml:space="preserve">
     <value>Error downloading.</value>
   </data>
+  <data name="UpdateManifestInvalidCaption" xml:space="preserve">
+    <value>Invalid Update Manifest</value>
+  </data>
+  <data name="UpdateManifestInvalidMessage" xml:space="preserve">
+    <value>Error parsing the update manifest info.</value>
+  </data>
 </root>

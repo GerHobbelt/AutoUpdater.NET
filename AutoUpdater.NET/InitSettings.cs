@@ -48,6 +48,7 @@ namespace AutoUpdaterDotNET
         internal readonly BitArray ReportLevels = new BitArray(2);
 
         // just for copy on Init()
+        internal string SetDefaultLogFolder;
         internal ILogger SetLogger;
 
         /// <summary>
@@ -196,6 +197,14 @@ namespace AutoUpdaterDotNET
         {
             ReportErrors = true;
             return this;
+        }
+
+        /// <summary>
+        ///     AutoUpdater.NET will use this, if provided. Usefull when running in unattended mode.
+        /// </summary>
+        public InitSettings SetTheDefaultLogFolder(string path)
+        {
+            SetDefaultLogFolder = path; return this;
         }
 
         ///<summary>

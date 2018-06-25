@@ -33,7 +33,6 @@ namespace UnitTests
             Assert.AreEqual(0, logger.ErrorCount, "No errors were expected");
             Assert.AreEqual(new Version(4,0,0,0), updater.InstalledVersion);
             Assert.AreEqual(new Version(2,0,0,0), updater.CurrentVersion);
-            Assert.AreEqual("setup.exe", updater.InstallerArgs);
             Assert.IsTrue(logger.LoggedStates.Contains(States.UnavailableUpdate), "Expected unavailable update state");
         }
 
@@ -41,7 +40,7 @@ namespace UnitTests
         public async Task _02_FoundNewUpdateThenDownloadItAndLaunchIt()
         {
             var done = new TaskCompletionSource<object>();
-            var dir = AppDomain.CurrentDomain.BaseDirectory + "\\test2";
+            var dir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "test2");
             var logger = new TestLogger();
             var launcherMock = new UpdateLauncherMock();
 
@@ -64,9 +63,9 @@ namespace UnitTests
             Assert.AreEqual(0, logger.ErrorCount, "No errors were expected");
             Assert.AreEqual(new Version(1, 0, 0, 0), updater.InstalledVersion);
             Assert.AreEqual(new Version(2, 0, 0, 0), updater.CurrentVersion);
-            Assert.AreEqual("https://github.com/asarmiento13315/AutoUpdater.NET/blob/master/UnitTests/DownloadSamples/installer.zip?raw=true", updater.DownloadURL);
-            Assert.AreEqual(dir + "\\installer.zip", launcherMock.updateFileName);
-            Assert.IsTrue(File.Exists(dir + "\\installer.zip"));
+            Assert.AreEqual("https://github.com/asarmiento13315/AutoUpdater.NET/blob/master/UnitTests/DownloadSamples/installer.msi?raw=true", updater.DownloadURL);
+            Assert.AreEqual(dir + "\\installer.msi", launcherMock.updateFileName);
+            Assert.IsTrue(File.Exists(dir + "\\installer.msi"));
             Assert.IsTrue(updater.DidExit);
         }
     }

@@ -26,6 +26,8 @@
         CustomUpdateCheckEventError,
         UnexpectedCheckProcessError,
 
+        LettingUserToProcessTheUpdate,
+        UserUpdateFormReturned,
         UserUpdateFormError,
         DownloadingUpdate,
         UpdateDownloadCompleted,

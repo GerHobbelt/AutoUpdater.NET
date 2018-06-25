@@ -16,7 +16,7 @@ namespace AutoUpdaterDotNET.BasicImpls
 
         public RemindLaterFormat RemindLaterTimeSpan { get; set; }
         public int RemindLaterAt { get; set; }
-        public CancellationDelegate CancellationDelegate { get; set; }
+        //public CancellationDelegate CancellationDelegate { get; set; }
 
         public BasicUpdateForm()
         {
@@ -129,9 +129,9 @@ namespace AutoUpdaterDotNET.BasicImpls
 
         private void UpdateForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            CancellationDelegate?.Invoke();
-            _result = UpdateFormResult.Cancelled;
-            DialogResult = DialogResult.Cancel;
+            //CancellationDelegate?.Invoke();
+            //_result = UpdateFormResult.Cancelled;
+            //DialogResult = DialogResult.Cancel;
         }
 
     }

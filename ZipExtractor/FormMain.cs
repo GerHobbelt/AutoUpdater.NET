@@ -21,13 +21,18 @@ namespace ZipExtractor
         private void FormMain_Shown(object sender, EventArgs e)
         {
             string[] args = Environment.GetCommandLineArgs();
+            File.AppendAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"{DateTime.Now:yyyy-MM-dd}.log"), $"cmd line args\n{string.Join("\n", args)}");
             if (args.Length >= 3)
             {
+                var zipFileName = args[1];
+                var progToStart = args[2];
+                var argsToStart = args.Length > 3 ? args[3] : string.Empty;
+
                 foreach (var process in Process.GetProcesses())
                 {
                     try
                     {
-                        if (process.MainModule.FileName.Equals(args[2]))
+                        if (process.MainModule.FileName.Equals(progToStart))
                         {
                             labelInformation.Text = @"Waiting for application to Exit...";
                             process.WaitForExit();
@@ -48,10 +53,10 @@ namespace ZipExtractor
 
                 _backgroundWorker.DoWork += (o, eventArgs) =>
                 {
-                    var path = Path.GetDirectoryName(args[2]);
+                    var path = Path.GetDirectoryName(progToStart);
 
                     // Open an existing zip file for reading.
-                    ZipStorer zip = ZipStorer.Open(args[1], FileAccess.Read);
+                    ZipStorer zip = ZipStorer.Open(zipFileName, FileAccess.Read);
 
                     // Read the central directory collection.
                     List<ZipStorer.ZipFileEntry> dir = zip.ReadCentralDir();
@@ -85,11 +90,9 @@ namespace ZipExtractor
                         labelInformation.Text = @"Finished";
                         try
                         {
-                            ProcessStartInfo processStartInfo = new ProcessStartInfo(args[2]);
-                            if (args.Length > 3)
-                            {
-                                processStartInfo.Arguments = args[3];
-                            }
+                            ProcessStartInfo processStartInfo = new ProcessStartInfo(progToStart);
+                            if (!string.IsNullOrEmpty(progToStart))
+                                processStartInfo.Arguments = argsToStart;
                             Process.Start(processStartInfo);
                         }
                         catch (Win32Exception exception)
