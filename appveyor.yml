@@ -54,33 +54,10 @@ build_script:
     secure-file\tools\secure-file -decrypt %APPVEYOR_BUILD_FOLDER%\UnitTests\UnitTests.snk.enc -secret %my_secret%
 
 
-    set ZipExtractorProj="%APPVEYOR_BUILD_FOLDER%\ZipExtractor\ZipExtractor.csproj"
-
-    set AutoUpdaterProj="%APPVEYOR_BUILD_FOLDER%\AutoUpdater.NET\AutoUpdater.NET.csproj"
-
-    set UnitTestsProj="%APPVEYOR_BUILD_FOLDER%\UnitTests\UnitTests.csproj"
-
     set AppveyorLogger="C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
 
-    set list=
-
-    set list=%list%;Release
-
-    set list=%list%;Release-NET35
-
-    set list=%list%;Release-NET40
-
-    set list=%list%;Release-NET452
-
-    set list=%list%;Release-NET462
-
-
-    for %%c in (%list%) do (
-      msbuild %ZipExtractorProj% /p:Configuration=%%c /verbosity:minimal /logger:%AppveyorLogger%
-      msbuild %AutoUpdaterProj% /p:Configuration=%%c /verbosity:minimal /logger:%AppveyorLogger%
-      msbuild %UnitTestsProj% /p:Configuration=%%c /verbosity:minimal /logger:%AppveyorLogger%
-    )
+    %APPVEYOR_BUILD_FOLDER%\build.cmd %APPVEYOR_BUILD_FOLDER% %AppveyorLogger%
 
 
     nuget pack "%APPVEYOR_BUILD_FOLDER%\AutoUpdater.NET\build\Autoupdater.NET.SelfDriven.nuspec" -Version %my_package_version%
