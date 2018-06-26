@@ -68,12 +68,6 @@ namespace UnitTests
             Assert.IsTrue(File.Exists(dir + "\\installer_v2.0.0.msi"));
             Assert.IsTrue(updater.DidExit);
         }
-
-        [TestMethod]
-        public void _03_FailingTest()
-        {
-            Assert.AreEqual(1,2);
-        }
     }
 
 
