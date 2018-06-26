@@ -11,8 +11,8 @@ set list=%list%;Release-NET40
 set list=%list%;Release-NET452
 set list=%list%;Release-NET462
 
-for %%config in (%list%) do (
-  msbuild %ZipExtractorProj% /p:Configuration=%%config /verbosity:minimal /logger:%Logger% || EXIT 1
-  msbuild %AutoUpdaterProj% /p:Configuration=%%config /verbosity:minimal /logger:%Logger% || EXIT 1
-  msbuild %UnitTestsProj% /p:Configuration=%%config /verbosity:minimal /logger:%Logger% || EXIT 1
+for %%c in (%list%) do (
+  msbuild %ZipExtractorProj% /p:Configuration=%%c /verbosity:minimal /logger:%Logger% || EXIT 1
+  msbuild %AutoUpdaterProj% /p:Configuration=%%c /verbosity:minimal /logger:%Logger% || EXIT 1
+  msbuild %UnitTestsProj% /p:Configuration=%%c /verbosity:minimal /logger:%Logger% || EXIT 1
 )
