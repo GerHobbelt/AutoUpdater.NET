@@ -76,10 +76,10 @@ build_script:
     set list=%list%;Release-NET462
 
 
-    for %%config in (%list%) do (
-      msbuild %ZipExtractorProj% /p:Configuration=%%config /verbosity:minimal /logger:%AppveyorLogger%
-      msbuild %AutoUpdaterProj% /p:Configuration=%%config /verbosity:minimal /logger:%AppveyorLogger%
-      msbuild %UnitTestsProj% /p:Configuration=%%config /verbosity:minimal /logger:%AppveyorLogger%
+    for %%c in (%list%) do (
+      msbuild %ZipExtractorProj% /p:Configuration=%%c /verbosity:minimal /logger:%AppveyorLogger%
+      msbuild %AutoUpdaterProj% /p:Configuration=%%c /verbosity:minimal /logger:%AppveyorLogger%
+      msbuild %UnitTestsProj% /p:Configuration=%%c /verbosity:minimal /logger:%AppveyorLogger%
     )
 
 
