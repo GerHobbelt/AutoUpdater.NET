@@ -37,7 +37,7 @@ assembly_info:
   file: '**\AutoUpdater.NET\Properties\AssemblyInfo.*'
   assembly_version: $(my_release_version)
   assembly_file_version: $(my_release_version)
-  assembly_informational_version: $(my_package_version) #$(my_release_version)
+  assembly_informational_version: $(my_package_version)
 environment:
   my_secret:
     secure: KyQ4Y+q48GXGJ1/dlnIm62Xz0oUwTcviRMrl02OiNGtin2DvVYMA27FbWfR5Xkx4
@@ -47,38 +47,43 @@ build_script:
 
     nuget restore
 
-    secure-file\tools\secure-file -decrypt c:\projects\AutoUpdater.NET\ZipExtractor\ZipExtractor.snk.enc -secret %my_secret%
+    secure-file\tools\secure-file -decrypt %APPVEYOR_BUILD_FOLDER%\ZipExtractor\ZipExtractor.snk.enc -secret %my_secret%
 
-    secure-file\tools\secure-file -decrypt c:\projects\AutoUpdater.NET\AutoUpdater.NET\AutoUpdater.NET.snk.enc -secret %my_secret%
+    secure-file\tools\secure-file -decrypt %APPVEYOR_BUILD_FOLDER%\AutoUpdater.NET\AutoUpdater.NET.snk.enc -secret %my_secret%
 
-    secure-file\tools\secure-file -decrypt c:\projects\AutoUpdater.NET\UnitTests\UnitTests.snk.enc -secret %my_secret%
-
-    msbuild "c:\projects\AutoUpdater.NET\ZipExtractor\ZipExtractor.csproj" /p:Configuration=Release /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
-
-    msbuild "c:\projects\AutoUpdater.NET\AutoUpdater.NET\AutoUpdater.NET.csproj" /p:Configuration=Release /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+    secure-file\tools\secure-file -decrypt %APPVEYOR_BUILD_FOLDER%\UnitTests\UnitTests.snk.enc -secret %my_secret%
 
 
-    msbuild "c:\projects\AutoUpdater.NET\ZipExtractor\ZipExtractor.csproj" /p:Configuration=Release-NET35 /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+    set ZipExtractorProj="%APPVEYOR_BUILD_FOLDER%\ZipExtractor\ZipExtractor.csproj"
 
-    msbuild "c:\projects\AutoUpdater.NET\AutoUpdater.NET\AutoUpdater.NET.csproj" /p:Configuration=Release-NET35 /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+    set AutoUpdaterProj="%APPVEYOR_BUILD_FOLDER%\AutoUpdater.NET\AutoUpdater.NET.csproj"
 
+    set UnitTestsProj="%APPVEYOR_BUILD_FOLDER%\UnitTests\UnitTests.csproj"
 
-    msbuild "c:\projects\AutoUpdater.NET\ZipExtractor\ZipExtractor.csproj" /p:Configuration=Release-NET40 /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
-
-    msbuild "c:\projects\AutoUpdater.NET\AutoUpdater.NET\AutoUpdater.NET.csproj" /p:Configuration=Release-NET40 /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
-
-
-    msbuild "c:\projects\AutoUpdater.NET\ZipExtractor\ZipExtractor.csproj" /p:Configuration=Release-NET452 /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
-
-    msbuild "c:\projects\AutoUpdater.NET\AutoUpdater.NET\AutoUpdater.NET.csproj" /p:Configuration=Release-NET452 /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+    set AppveyorLogger="C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
 
-    msbuild "c:\projects\AutoUpdater.NET\ZipExtractor\ZipExtractor.csproj" /p:Configuration=Release-NET462 /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+    set list=
 
-    msbuild "c:\projects\AutoUpdater.NET\AutoUpdater.NET\AutoUpdater.NET.csproj" /p:Configuration=Release-NET462 /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+    set list=%list%;Release
+
+    set list=%list%;Release-NET35
+
+    set list=%list%;Release-NET40
+
+    set list=%list%;Release-NET452
+
+    set list=%list%;Release-NET462
 
 
-    nuget pack "c:\projects\AutoUpdater.NET\AutoUpdater.NET\build\Autoupdater.NET.SelfDriven.nuspec" -Version %my_package_version%
+    for %%config in (%list%) do (
+      msbuild %ZipExtractorProj% /p:Configuration=%%config /verbosity:minimal /logger:%AppveyorLogger%
+      msbuild %AutoUpdaterProj% /p:Configuration=%%config /verbosity:minimal /logger:%AppveyorLogger%
+      msbuild %UnitTestsProj% /p:Configuration=%%config /verbosity:minimal /logger:%AppveyorLogger%
+    )
+
+
+    nuget pack "%APPVEYOR_BUILD_FOLDER%\AutoUpdater.NET\build\Autoupdater.NET.SelfDriven.nuspec" -Version %my_package_version%
 
 
     7z a %my_package_name%-%my_build_version%.zip %APPVEYOR_BUILD_FOLDER%\AutoUpdater.NET\build\lib\*
@@ -97,14 +102,14 @@ deploy:
   skip_symbols: true
   artifact: '%my_package_name%.%my_package_version%.nupkg'
 - provider: GitHub
-  release: '$(my_build_version)'
+  release: "'$(my_build_version)'"
   auth_token:
     secure: /GyKxy/BoEv0aU75gh8Y4G/QY7L3AnjvS6hezGUrQuqRC+i7yVS1G657HAWcv5xE
   artifact: '%my_package_name%-%my_build_version%.zip'
   on:
     is_prerelease: false
 - provider: GitHub
-  release: '$(my_build_version)'
+  release: "'$(my_build_version)'"
   auth_token:
     secure: /GyKxy/BoEv0aU75gh8Y4G/QY7L3AnjvS6hezGUrQuqRC+i7yVS1G657HAWcv5xE
   artifact: '%my_package_name%-%my_build_version%.zip'
