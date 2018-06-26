@@ -113,6 +113,62 @@
     {
         "CustomAction"
         {
+            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_046FFBB7ED6345BC9D6194CBFBBB890E"
+            {
+            "Name" = "8:Primary output from AutoUpdaterWinFormLiveTest (Active)"
+            "Condition" = "8:"
+            "Object" = "8:_384135F521E3457D87F62DD378AF3402"
+            "FileType" = "3:2"
+            "InstallAction" = "3:4"
+            "Arguments" = "8:"
+            "EntryPoint" = "8:"
+            "Sequence" = "3:1"
+            "Identifier" = "8:_EDAC9E62_1B91_42F3_9AA1_B9C4CABA54B1"
+            "InstallerClass" = "11:TRUE"
+            "CustomActionData" = "8:"
+            }
+            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_1C0B52C8BC3A44B399CCF1D049A64CDF"
+            {
+            "Name" = "8:Primary output from AutoUpdaterWinFormLiveTest (Active)"
+            "Condition" = "8:"
+            "Object" = "8:_384135F521E3457D87F62DD378AF3402"
+            "FileType" = "3:2"
+            "InstallAction" = "3:3"
+            "Arguments" = "8:"
+            "EntryPoint" = "8:"
+            "Sequence" = "3:1"
+            "Identifier" = "8:_F8F36EC2_1E35_4079_9811_C5EB102F60CC"
+            "InstallerClass" = "11:TRUE"
+            "CustomActionData" = "8:"
+            }
+            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_59CE9D115D704496938D5AF9E3352C07"
+            {
+            "Name" = "8:Primary output from AutoUpdaterWinFormLiveTest (Active)"
+            "Condition" = "8:"
+            "Object" = "8:_384135F521E3457D87F62DD378AF3402"
+            "FileType" = "3:2"
+            "InstallAction" = "3:2"
+            "Arguments" = "8:"
+            "EntryPoint" = "8:"
+            "Sequence" = "3:1"
+            "Identifier" = "8:_536B77EE_CEC3_4C4D_9912_066E25859356"
+            "InstallerClass" = "11:TRUE"
+            "CustomActionData" = "8:"
+            }
+            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_64EB40265FB64D2E8E3BD27648174DBE"
+            {
+            "Name" = "8:Primary output from AutoUpdaterWinFormLiveTest (Active)"
+            "Condition" = "8:"
+            "Object" = "8:_384135F521E3457D87F62DD378AF3402"
+            "FileType" = "3:2"
+            "InstallAction" = "3:1"
+            "Arguments" = "8:"
+            "EntryPoint" = "8:"
+            "Sequence" = "3:1"
+            "Identifier" = "8:_D2B3905F_2033_4088_8DF0_B421C05380A1"
+            "InstallerClass" = "11:TRUE"
+            "CustomActionData" = "8:"
+            }
         }
         "DefaultFeature"
         {
@@ -241,6 +297,13 @@
         }
         "LaunchCondition"
         {
+            "{836E08B8-0285-4809-BA42-01DB6754A45D}:_70093C6CDE594FE6892426FA9F420AF7"
+            {
+            "Name" = "8:As Admin"
+            "Condition" = "8:AdminUser"
+            "Message" = "8:<Error Message>"
+            "InstallUrl" = "8:"
+            }
         }
         "Locator"
         {
@@ -253,20 +316,20 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:AutoUpdaterWinFormLiveTest"
-        "ProductCode" = "8:{1B74472B-D2BE-4820-92DA-F198C258E4FB}"
-        "PackageCode" = "8:{88C24244-4839-4206-BB31-3E84ABFA651B}"
+        "ProductName" = "8:AutoUpdater WinForm Live Test"
+        "ProductCode" = "8:{E9926ECC-ADF7-4363-B2ED-4A57FBE287DA}"
+        "PackageCode" = "8:{66DCA292-B233-4FBC-8410-F6B887EBADF4}"
         "UpgradeCode" = "8:{FCE24D0F-2DA9-43A5-84E5-35665D1E99BB}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
-        "RemovePreviousVersions" = "11:FALSE"
+        "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:1.0.0"
+        "ProductVersion" = "8:2.0.0"
         "Manufacturer" = "8:K1k0Soft"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
-        "Title" = "8:Auto Updater WinForm Live Test"
+        "Title" = "8:AutoUpdater WinForm Live Test"
         "Subject" = "8:"
         "ARPCONTACT" = "8:Alberto Sarmiento"
         "Keywords" = "8:"
@@ -375,6 +438,20 @@
         }
         "Shortcut"
         {
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_CBB94846F08A4CB89CDC750DE14E9937"
+            {
+            "Name" = "8:AutoUpdaterWinFormLiveTest"
+            "Arguments" = "8:"
+            "Description" = "8:Just a test to show the process cycle of the AutoUpdater in a winform app."
+            "ShowCmd" = "3:1"
+            "IconIndex" = "3:0"
+            "Transitive" = "11:FALSE"
+            "Target" = "8:_384135F521E3457D87F62DD378AF3402"
+            "Folder" = "8:_0E4294BF7223407293923451FE15AD97"
+            "WorkingFolder" = "8:_23C8735E2F1447289357546E17489214"
+            "Icon" = "8:"
+            "Feature" = "8:"
+            }
         }
         "UserInterface"
         {

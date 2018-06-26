@@ -63,7 +63,7 @@ namespace UnitTests
             Assert.AreEqual(0, logger.ErrorCount, "No errors were expected");
             Assert.AreEqual(new Version(1, 0, 0, 0), updater.InstalledVersion);
             Assert.AreEqual(new Version(2, 0, 0, 0), updater.CurrentVersion);
-            Assert.AreEqual("https://github.com/asarmiento13315/AutoUpdater.NET/blob/master/UnitTests/DownloadSamples/installer.msi?raw=true", updater.DownloadURL);
+            Assert.AreEqual("https://github.com/asarmiento13315/AutoUpdater.NET/blob/master/UnitTests/DownloadSamples/installer_v2.0.0.msi?raw=true", updater.DownloadURL);
             Assert.AreEqual(dir + "\\installer.msi", launcherMock.updateFileName);
             Assert.IsTrue(File.Exists(dir + "\\installer.msi"));
             Assert.IsTrue(updater.DidExit);

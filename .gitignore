@@ -256,4 +256,4 @@ AutoUpdater.NET/build/lib/
 AutoUpdaterWinFormLiveTest/update
 !AutoUpdaterWinFormLiveTest/_TestInstaller
 AutoUpdaterWinFormLiveTest/_TestInstaller/*
-!AutoUpdaterWinFormLiveTest/_TestInstaller/Installer.msi
+!AutoUpdaterWinFormLiveTest/_TestInstaller/*.msi
