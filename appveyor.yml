@@ -57,7 +57,7 @@ build_script:
     set AppveyorLogger="C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
 
-    %APPVEYOR_BUILD_FOLDER%\build.cmd %APPVEYOR_BUILD_FOLDER% %AppveyorLogger%
+    %APPVEYOR_BUILD_FOLDER%\build.bat %APPVEYOR_BUILD_FOLDER% %AppveyorLogger%
 
 
     nuget pack "%APPVEYOR_BUILD_FOLDER%\AutoUpdater.NET\build\Autoupdater.NET.SelfDriven.nuspec" -Version %my_package_version%
