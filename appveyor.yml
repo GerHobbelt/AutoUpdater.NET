@@ -79,14 +79,14 @@ deploy:
   skip_symbols: true
   artifact: '%my_package_name%.%my_package_version%.nupkg'
 - provider: GitHub
-  release: "'$(my_build_version)'"
+  release: "$(my_build_version)"
   auth_token:
     secure: /GyKxy/BoEv0aU75gh8Y4G/QY7L3AnjvS6hezGUrQuqRC+i7yVS1G657HAWcv5xE
   artifact: '%my_package_name%-%my_build_version%.zip'
   on:
     is_prerelease: false
 - provider: GitHub
-  release: "'$(my_build_version)'"
+  release: "$(my_build_version)"
   auth_token:
     secure: /GyKxy/BoEv0aU75gh8Y4G/QY7L3AnjvS6hezGUrQuqRC+i7yVS1G657HAWcv5xE
   artifact: '%my_package_name%-%my_build_version%.zip'

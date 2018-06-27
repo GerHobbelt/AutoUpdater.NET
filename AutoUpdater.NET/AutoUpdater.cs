@@ -41,7 +41,7 @@ namespace AutoUpdaterDotNET
         public InitSettings Settings { get; internal set; }
         public ILogger Logger
         {
-            get { return _innerLogger; }
+            get { return _innerLogger.OutterLogger; }
             set { _innerLogger.OutterLogger = value; }
         }
 
