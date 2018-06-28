@@ -35,11 +35,12 @@ namespace AutoUpdaterDotNET.BasicImpls
             }
             else if (".msi".Equals(extension, StringComparison.OrdinalIgnoreCase))
             {
-                var passive = unattended ? "/passive" : "";
+                var passive = unattended ? "/passive " : "";
+                var installLogFile = Path.Combine(Path.GetDirectoryName(fileName), "install.log");
                 processStartInfo = new ProcessStartInfo
                 {
                     FileName = "msiexec",
-                    Arguments = $"/i {passive} \"{fileName}\""
+                    Arguments = $"/i \"{fileName}\" {passive}/le {installLogFile}"
                 };
             }
 
