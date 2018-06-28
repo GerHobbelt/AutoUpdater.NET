@@ -293,7 +293,7 @@ namespace AutoUpdaterDotNET
 
 #pragma warning disable 1591
     public delegate Version InstalledVersionProviderDelegate();
-    public delegate void ApplicationExitEventHandler();
+    public delegate void ApplicationExitEventHandler(ref bool exitHandled);
     public delegate void UpdateCheckEventHandler(UpdateInfoEventArgs args);
     public delegate void ParseUpdateInfoHandler(ParseUpdateInfoEventArgs args);
     public delegate void DoneDelegate();

@@ -728,7 +728,9 @@ namespace AutoUpdaterDotNET
                     try
                     {
                         Logger.Info(States.ApplicationExitEvent);
-                        Settings.ApplicationExitEvent();
+                        var exitHandled = false;
+                        Settings.ApplicationExitEvent(ref exitHandled);
+                        if (exitHandled) return;
                     }
                     catch (Exception e)
                     {
