@@ -37,6 +37,7 @@ namespace AutoUpdaterDotNET.BasicImpls
             {
                 var passive = unattended ? "/passive " : "";
                 var installLogFile = Path.Combine(Path.GetDirectoryName(fileName), "install.log");
+                File.AppendAllText(installLogFile, "");
                 processStartInfo = new ProcessStartInfo
                 {
                     FileName = "msiexec",
