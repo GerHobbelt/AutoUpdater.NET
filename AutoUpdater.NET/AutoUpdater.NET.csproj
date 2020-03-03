@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -36,37 +36,44 @@
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <OutputPath>bin\Debug\net20</OutputPath>
     <DocumentationFile>bin\Debug\net20\AutoUpdater.NET.XML</DocumentationFile>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <OutputPath>build\lib\net20</OutputPath>
     <DocumentationFile>build\lib\net20\AutoUpdater.NET.XML</DocumentationFile>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug-NET35' ">
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <OutputPath>bin\Debug\net35</OutputPath>
     <DocumentationFile>bin\Debug\net35\AutoUpdater.NET.XML</DocumentationFile>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release-NET35' ">
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <OutputPath>build\lib\net35</OutputPath>
     <DocumentationFile>build\lib\net35\AutoUpdater.NET.XML</DocumentationFile>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug-NET40' ">
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <OutputPath>bin\Debug\net40</OutputPath>
     <DocumentationFile>bin\Debug\net40\AutoUpdater.NET.XML</DocumentationFile>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release-NET40' ">
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <OutputPath>build\lib\net40</OutputPath>
     <DocumentationFile>build\lib\net40\AutoUpdater.NET.XML</DocumentationFile>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>AutoUpdater.NET.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <!-- WPF Specific -->
   <PropertyGroup Condition=" '$(TargetFrameworkVersion)' != 'v2.0' And '$(TargetFrameworkVersion)' != 'v3.0' ">
@@ -349,7 +356,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="AutoUpdater.NET.snk" />
     <None Include="build\Autoupdater.NET.Official.nuspec">
       <SubType>Designer</SubType>
     </None>
